@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://fiscal-fox.synctune.it/sitemap.xml

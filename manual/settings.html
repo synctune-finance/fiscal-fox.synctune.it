@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Settings | Fiscal Fox</title>
+  <meta name="description" content="Organization details, receipt reading and AI options, members, roles and invitations.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101318" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://fiscal-fox.synctune.it/manual/settings.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fiscal Fox">
+  <meta property="og:title" content="Settings | Fiscal Fox">
+  <meta property="og:description" content="Organization details, receipt reading and AI options, members, roles and invitations.">
+  <meta property="og:url" content="https://fiscal-fox.synctune.it/manual/settings.html">
+  <meta property="og:image" content="https://fiscal-fox.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Fiscal Fox logo, a fox with euro signs for eyes, next to the words Fiscal Fox.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="40" height="40"><span>Fiscal Fox</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html#features">Features</a>
+        <a href="index.html" aria-current="true">User manual</a>
+        <a href="../self-hosting/index.html">Self-hosting</a>
+        <a href="https://finance.synctune.it">Synctune Finance <span class="arrow" aria-hidden="true">&#8599;</span></a>
+      </nav>
+    </div>
+  </header>
+  <div class="wrap docs-layout">
+    <main id="main" class="docs-main" tabindex="-1">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="index.html">User manual</a></li>
+          <li><span aria-current="page">Settings</span></li>
+        </ol>
+      </nav>
+      <article class="prose">
+<!-- content:start -->
+<h1>Settings</h1>
+<p><strong>Settings</strong> shows your organization details and lets owners and admins manage
+team members and how documents are read.</p>
+<figure class="shot"><img src="../assets/screenshots/settings.png" alt="Settings page with organization details and AI document processing options" width="1440" height="900" loading="lazy" decoding="async"></figure>
+<h2 id="organization">Organization</h2>
+<p>The <strong>Organization</strong> card shows the name, country, base currency, time zone,
+and your role.</p>
+<h2 id="ai-document-processing">AI document processing</h2>
+<p>These options decide how <a href="expenses.html">Expenses</a> reads receipts. Only owners
+and admins can change them.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="AI document processing table">
+<table>
+<thead><tr><th scope="col">Setting</th><th scope="col">What it does</th></tr></thead>
+<tbody>
+<tr><td><strong>Mode</strong></td><td><strong>Local first</strong> tries local text recognition before any provider; <strong>Provider first</strong> asks the provider first.</td></tr>
+<tr><td><strong>Provider</strong></td><td><strong>Local</strong>, <strong>OpenAI compatible</strong>, or <strong>Copilot</strong>.</td></tr>
+<tr><td><strong>Model</strong>, <strong>Base URL</strong>, <strong>API key</strong></td><td>Connection details for the provider. Leave the key blank to keep the current one, or tick <strong>Clear configured API key</strong>.</td></tr>
+<tr><td><strong>Minimum local confidence</strong>, <strong>Minimum structured confidence</strong></td><td>How sure the reader must be (0 to 1) before its result is trusted.</td></tr>
+<tr><td><strong>Auto-create threshold</strong></td><td>Optional. When a reading with a date and a positive total is at least this sure (0 to 1), the expense is posted without review. Leave empty to review every receipt.</td></tr>
+</tbody>
+</table>
+</div>
+<p>To save, tick <strong>I acknowledge the privacy warning for this provider
+configuration</strong> and select <strong>Save AI settings</strong>.</p>
+<div class="callout callout-caution" role="note">
+<p class="callout-title">Caution</p>
+<p>With a remote provider, receipt text or images can leave your servers. Check
+the provider&#39;s retention, training, and residency terms and get the required
+privacy approval first. See
+<a href="../self-hosting/integrations.html#document-intelligence-and-ai">Integrations</a>.</p>
+</div>
+<h2 id="members-and-invitations">Members and invitations</h2>
+<p>The <strong>Members</strong> list shows each person, their email, role, and when they
+joined.</p>
+<h3 id="invite-someone">Invite someone</h3>
+<ol>
+<li>Select <strong>Invite member</strong>.</li>
+<li>Enter their <strong>Email</strong> and choose a <strong>Role</strong>: <strong>Admin</strong>, <strong>Accountant</strong>,
+<strong>Member</strong>, or <strong>Viewer</strong>.</li>
+<li>Select <strong>Create invitation</strong>.</li>
+</ol>
+<p>Fiscal Fox shows an invitation link that expires. Send it to the person through
+a channel you trust. They open it, create their account or sign in, and join
+the organization.</p>
+<h3 id="change-a-role">Change a role</h3>
+<p>Use the <strong>Role</strong> selector in a member&#39;s row. The roles you can assign depend on
+your own role. See <a href="index.html#roles">Roles</a> for what each role can do.</p>
+<h2 id="other-connections">Other connections</h2>
+<p>Stripe, DocuSign, calendars, maps, and email are set up on the server by your
+administrator; see <a href="../self-hosting/configuration.html">Configuration</a> and
+<a href="../self-hosting/integrations.html">Integrations</a>. Once Stripe is configured, finish
+onboarding from <a href="payments.html#connect-stripe">Payments</a>.</p>
+<!-- content:end -->
+      </article>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-prev" href="activity-log.html" rel="prev"><span class="pager-label">Previous</span> Activity log</a>
+        <a class="pager-next" href="accounting.html" rel="next"><span class="pager-label">Next</span> Accounting rules</a>
+      </nav>
+    </main>
+    <nav class="docs-nav" aria-label="Documentation">
+      <p class="docs-nav-title" id="nav-manual">User manual</p>
+      <ul aria-labelledby="nav-manual">
+          <li><a href="index.html">Getting started</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="sales.html">Sales</a></li>
+          <li><a href="expenses.html">Expenses</a></li>
+          <li><a href="time-and-trips.html">Time and trips</a></li>
+          <li><a href="contacts.html">Contacts and catalog</a></li>
+          <li><a href="payments.html">Payments</a></li>
+          <li><a href="reports.html">Reports and VAT</a></li>
+          <li><a href="contracts.html">Contracts</a></li>
+          <li><a href="bookkeeping.html">Bookkeeping</a></li>
+          <li><a href="imports-exports.html">Import and export</a></li>
+          <li><a href="activity-log.html">Activity log</a></li>
+          <li><a href="settings.html" aria-current="page">Settings</a></li>
+          <li><a href="accounting.html">Accounting rules</a></li>
+      </ul>
+      <p class="docs-nav-title" id="nav-self-hosting">Self-hosting</p>
+      <ul aria-labelledby="nav-self-hosting">
+          <li><a href="../self-hosting/index.html">Install and run</a></li>
+          <li><a href="../self-hosting/configuration.html">Configuration</a></li>
+          <li><a href="../self-hosting/integrations.html">Integrations</a></li>
+          <li><a href="../self-hosting/production.html">Production checklist</a></li>
+          <li><a href="../self-hosting/backup-restore.html">Backup and restore</a></li>
+          <li><a href="../self-hosting/api.html">API</a></li>
+      </ul>
+    </nav>
+  </div>
+  <footer class="site-footer">
+    <div class="wrap footer-top">
+      <div class="footer-about">
+        <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="32" height="32"><span>Fiscal Fox</span></a>
+        <p>Self-hosted accounting for small businesses. A <a href="https://finance.synctune.it">Synctune Finance</a> project.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="index.html">User manual</a>
+        <a href="../self-hosting/index.html">Self-hosting</a>
+        <a href="https://synctune.it">Synctune</a>
+      </nav>
+    </div>
+    <div class="wrap footer-bottom">
+      <p>Documentation as of 15 November 2026. Not financial, tax or legal advice.</p>
+      <details class="privacy">
+        <summary>No cookies. No tracking.</summary>
+        <p>This website uses no analytics, cookies, scripts, web fonts or third-party widgets. Images and styles are local files. The hosting provider may process standard request data. Linked websites have their own privacy policies.</p>
+      </details>
+    </div>
+  </footer>
+</body>
+</html>

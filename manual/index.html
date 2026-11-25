@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Getting started | Fiscal Fox</title>
+  <meta name="description" content="Sign in, create your organization, find your way around Fiscal Fox and learn what each role can do.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101318" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://fiscal-fox.synctune.it/manual/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fiscal Fox">
+  <meta property="og:title" content="Getting started | Fiscal Fox">
+  <meta property="og:description" content="Sign in, create your organization, find your way around Fiscal Fox and learn what each role can do.">
+  <meta property="og:url" content="https://fiscal-fox.synctune.it/manual/">
+  <meta property="og:image" content="https://fiscal-fox.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Fiscal Fox logo, a fox with euro signs for eyes, next to the words Fiscal Fox.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="40" height="40"><span>Fiscal Fox</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html#features">Features</a>
+        <a href="index.html" aria-current="page">User manual</a>
+        <a href="../self-hosting/index.html">Self-hosting</a>
+        <a href="https://finance.synctune.it">Synctune Finance <span class="arrow" aria-hidden="true">&#8599;</span></a>
+      </nav>
+    </div>
+  </header>
+  <div class="wrap docs-layout">
+    <main id="main" class="docs-main" tabindex="-1">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../index.html">Home</a></li>
+          <li><span aria-current="page">User manual</span></li>
+        </ol>
+      </nav>
+      <article class="prose">
+<!-- content:start -->
+<h1>Getting started</h1>
+<p>Fiscal Fox is a self-hosted accounting workspace for small businesses. This
+manual walks through every screen for the people who use it day to day. For
+installing and running Fiscal Fox, see <a href="../self-hosting/index.html">Install and run</a> and
+<a href="../self-hosting/configuration.html">Configuration</a>.</p>
+<div class="callout callout-note" role="note">
+<p class="callout-title">Note</p>
+<p>Fiscal Fox is built for businesses in the Netherlands 🇳🇱: Dutch VAT, a Dutch
+chart of accounts, and Belastingdienst rules. Italy 🇮🇹, Spain 🇪🇸, and the
+United States 🇺🇸 are coming soon.</p>
+</div>
+<p>Every screenshot in this manual shows a fictional demo organization with a
+year of made-up activity. No real business data appears on this website.</p>
+<h2 id="sign-in">Sign in</h2>
+<figure class="shot"><img src="../assets/screenshots/sign-in.png" alt="Sign-in screen with email, password, and passkey options" width="1440" height="900" loading="lazy" decoding="async"></figure>
+<p>Sign in with your <strong>Email</strong> and <strong>Password</strong>, or choose <strong>Sign in with a
+passkey</strong> if you have added one.</p>
+<ul>
+<li><strong>First account.</strong> On a new installation, <strong>Create the first local account</strong>
+opens a sign-up form (<strong>Name</strong>, <strong>Email</strong>, <strong>Password</strong>). Passwords need at
+least 12 characters.</li>
+<li><strong>Everyone else</strong> joins through an invitation. The sign-in card then shows
+&quot;New accounts require an organization invitation.&quot; Ask an owner or admin to
+invite you from <a href="settings.html#members-and-invitations">Settings</a>, then open
+the invitation link they send you.</li>
+<li><strong>Passkeys.</strong> Once signed in, select the key icon (<strong>Add a passkey</strong>) in the
+top bar to register one for this device.</li>
+</ul>
+<h2 id="create-your-organization">Create your organization</h2>
+<p>The first user creates an organization with a <strong>Trading name</strong>, an optional
+<strong>Legal name</strong>, and a <strong>Business email</strong>. New organizations start with Dutch
+defaults: country NL, currency EUR, time zone Europe/Amsterdam, a Dutch chart
+of accounts, Dutch VAT codes, and monthly fiscal periods.</p>
+<p>If you belong to more than one organization, <strong>Select an organization</strong> lists
+them with your role, country, and currency. Each organization keeps its
+financial data separate. Switch later with the organization selector at the
+top of the sidebar.</p>
+<h2 id="find-your-way-around">Find your way around</h2>
+<p>The sidebar groups the screens:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Find your way around table">
+<table>
+<thead><tr><th scope="col">Group</th><th scope="col">Screens</th></tr></thead>
+<tbody>
+<tr><td></td><td><a href="dashboard.html">Dashboard</a></td></tr>
+<tr><td>Everyday</td><td><a href="sales.html">Sales</a>, <a href="expenses.html">Expenses</a>, <a href="time-and-trips.html">Time and Trips</a>, <a href="contacts.html">Contacts</a></td></tr>
+<tr><td>Money and tax</td><td><a href="payments.html">Payments</a>, <a href="reports.html#vat">VAT</a>, <a href="reports.html">Reports</a></td></tr>
+<tr><td>More</td><td><a href="contracts.html">Contracts</a>, <a href="bookkeeping.html">Bookkeeping</a>, <a href="imports-exports.html">Import and export</a>, <a href="activity-log.html">Activity log</a></td></tr>
+<tr><td></td><td><a href="settings.html">Settings</a></td></tr>
+</tbody>
+</table>
+</div>
+<figure class="shot"><img src="../assets/screenshots/jump-to-page.png" alt="Jump to a page search showing the VAT result for the query &quot;vat&quot;" width="1440" height="900" loading="lazy" decoding="async"></figure>
+<ul>
+<li><strong>Jump to a page.</strong> Press <kbd>⌘</kbd> <kbd>K</kbd> on a Mac or
+<kbd>Ctrl</kbd> <kbd>K</kbd> elsewhere, type a page name or a keyword (Dutch
+terms such as &quot;btw&quot; work too), pick a result with the arrow keys, and press
+<kbd>Enter</kbd>. <kbd>Esc</kbd> clears the search.</li>
+<li><strong>Light or dark.</strong> The moon or sun icon in the top bar switches the theme.
+Your choice is remembered in this browser.</li>
+<li><strong>Background tasks.</strong> When exports, emails, or other background work are
+running or have failed, the top bar shows a counter that opens the
+<a href="activity-log.html">Activity log</a>.</li>
+<li><strong>Smaller screens.</strong> <strong>Hide menu</strong> collapses the sidebar. On narrow windows,
+<strong>Open navigation</strong> shows the menu as a drawer.</li>
+<li><strong>Sign out</strong> with the arrow icon at the end of the top bar.</li>
+</ul>
+<h2 id="roles">Roles</h2>
+<p>Each member of an organization has one role. The screens only show the actions
+your role allows.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Roles table">
+<table>
+<thead><tr><th scope="col">You can</th><th scope="col" class="align-center">Owner</th><th scope="col" class="align-center">Admin</th><th scope="col" class="align-center">Accountant</th><th scope="col" class="align-center">Member</th><th scope="col" class="align-center">Viewer</th></tr></thead>
+<tbody>
+<tr><td>See contacts, documents, and the ledger</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">Yes</td></tr>
+<tr><td>Create and edit contacts</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">No</td><td class="align-center">Yes</td><td class="align-center">No</td></tr>
+<tr><td>Create sales documents, expenses, time, trips</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">No</td><td class="align-center">Yes</td><td class="align-center">No</td></tr>
+<tr><td>Approve expenses, time, and trips</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">No</td><td class="align-center">No</td></tr>
+<tr><td>Post and reverse journals, lock periods</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">No</td><td class="align-center">No</td></tr>
+<tr><td>Export reports</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">No</td><td class="align-center">No</td></tr>
+<tr><td>See the audit log</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">No</td><td class="align-center">No</td></tr>
+<tr><td>Manage payments and refunds</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">No</td><td class="align-center">No</td><td class="align-center">No</td></tr>
+<tr><td>Manage members and organization-wide AI options</td><td class="align-center">Yes</td><td class="align-center">Yes</td><td class="align-center">No</td><td class="align-center">No</td><td class="align-center">No</td></tr>
+</tbody>
+</table>
+</div>
+<p>Accountants can soft-lock a fiscal period; only owners and admins can lock it
+fully or reopen it.</p>
+<h2 id="what-fiscal-fox-does-not-do">What Fiscal Fox does not do</h2>
+<p>Fiscal Fox prepares numbers and files; you hand them off. It does not connect
+to your bank, transmit Peppol messages, or file tax returns. XAF and UBL files
+are exchange files for your accountant or access point.</p>
+<p>How Fiscal Fox books documents and works out the VAT return is described in
+<a href="accounting.html">Accounting rules</a>.</p>
+<!-- content:end -->
+      </article>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-next" href="dashboard.html" rel="next"><span class="pager-label">Next</span> Dashboard</a>
+      </nav>
+    </main>
+    <nav class="docs-nav" aria-label="Documentation">
+      <p class="docs-nav-title" id="nav-manual">User manual</p>
+      <ul aria-labelledby="nav-manual">
+          <li><a href="index.html" aria-current="page">Getting started</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="sales.html">Sales</a></li>
+          <li><a href="expenses.html">Expenses</a></li>
+          <li><a href="time-and-trips.html">Time and trips</a></li>
+          <li><a href="contacts.html">Contacts and catalog</a></li>
+          <li><a href="payments.html">Payments</a></li>
+          <li><a href="reports.html">Reports and VAT</a></li>
+          <li><a href="contracts.html">Contracts</a></li>
+          <li><a href="bookkeeping.html">Bookkeeping</a></li>
+          <li><a href="imports-exports.html">Import and export</a></li>
+          <li><a href="activity-log.html">Activity log</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="accounting.html">Accounting rules</a></li>
+      </ul>
+      <p class="docs-nav-title" id="nav-self-hosting">Self-hosting</p>
+      <ul aria-labelledby="nav-self-hosting">
+          <li><a href="../self-hosting/index.html">Install and run</a></li>
+          <li><a href="../self-hosting/configuration.html">Configuration</a></li>
+          <li><a href="../self-hosting/integrations.html">Integrations</a></li>
+          <li><a href="../self-hosting/production.html">Production checklist</a></li>
+          <li><a href="../self-hosting/backup-restore.html">Backup and restore</a></li>
+          <li><a href="../self-hosting/api.html">API</a></li>
+      </ul>
+    </nav>
+  </div>
+  <footer class="site-footer">
+    <div class="wrap footer-top">
+      <div class="footer-about">
+        <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="32" height="32"><span>Fiscal Fox</span></a>
+        <p>Self-hosted accounting for small businesses. A <a href="https://finance.synctune.it">Synctune Finance</a> project.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="index.html">User manual</a>
+        <a href="../self-hosting/index.html">Self-hosting</a>
+        <a href="https://synctune.it">Synctune</a>
+      </nav>
+    </div>
+    <div class="wrap footer-bottom">
+      <p>Documentation as of 15 November 2026. Not financial, tax or legal advice.</p>
+      <details class="privacy">
+        <summary>No cookies. No tracking.</summary>
+        <p>This website uses no analytics, cookies, scripts, web fonts or third-party widgets. Images and styles are local files. The hosting provider may process standard request data. Linked websites have their own privacy policies.</p>
+      </details>
+    </div>
+  </footer>
+</body>
+</html>

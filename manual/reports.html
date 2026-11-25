@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reports and VAT | Fiscal Fox</title>
+  <meta name="description" content="Financial reports, exports for your accountant and the quarterly Dutch VAT return, box by box.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101318" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://fiscal-fox.synctune.it/manual/reports.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fiscal Fox">
+  <meta property="og:title" content="Reports and VAT | Fiscal Fox">
+  <meta property="og:description" content="Financial reports, exports for your accountant and the quarterly Dutch VAT return, box by box.">
+  <meta property="og:url" content="https://fiscal-fox.synctune.it/manual/reports.html">
+  <meta property="og:image" content="https://fiscal-fox.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Fiscal Fox logo, a fox with euro signs for eyes, next to the words Fiscal Fox.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="40" height="40"><span>Fiscal Fox</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html#features">Features</a>
+        <a href="index.html" aria-current="true">User manual</a>
+        <a href="../self-hosting/index.html">Self-hosting</a>
+        <a href="https://finance.synctune.it">Synctune Finance <span class="arrow" aria-hidden="true">&#8599;</span></a>
+      </nav>
+    </div>
+  </header>
+  <div class="wrap docs-layout">
+    <main id="main" class="docs-main" tabindex="-1">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="index.html">User manual</a></li>
+          <li><span aria-current="page">Reports and VAT</span></li>
+        </ol>
+      </nav>
+      <article class="prose">
+<!-- content:start -->
+<h1>Reports and VAT</h1>
+<p><strong>Reports</strong> shows how the business is doing over any period and exports the
+numbers for your accountant. <strong>VAT</strong> prepares the quarterly Dutch VAT return.</p>
+<h2 id="reports">Reports</h2>
+<figure class="shot"><img src="../assets/screenshots/reports.png" alt="Reports page with the report picker on the left and profit and loss for this year" width="1440" height="900" loading="lazy" decoding="async"></figure>
+<p>Pick a report on the left, then set the period: <strong>Year</strong> and <strong>Quarter</strong> for
+quarterly reports, or <strong>From</strong> and <strong>To</strong> dates (with <strong>This year</strong> and <strong>Last
+year</strong> shortcuts) for the rest.</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Reports table">
+<table>
+<thead><tr><th scope="col">Group</th><th scope="col">Reports</th></tr></thead>
+<tbody>
+<tr><td>VAT</td><td>VAT return, VAT by tax code, Intra-EU supplies (ICP), EU distance sales (OSS), Small business scheme (KOR)</td></tr>
+<tr><td>Financial</td><td>Financial statements, Profit and loss, Balance sheet, Cash flow, Money in and out, Unpaid invoices</td></tr>
+<tr><td>Insights</td><td>Customer insight, Supplier insight, Products and services, Cost categories, Trips timeline</td></tr>
+<tr><td>Bookkeeping</td><td>Trial balance, General ledger</td></tr>
+</tbody>
+</table>
+</div>
+<p>Reports read posted bookkeeping only, so drafts never appear. How each figure
+is worked out is described in <a href="accounting.html">Accounting rules</a>.</p>
+<h3 id="export-a-report">Export a report</h3>
+<p>Choose a <strong>File type</strong> and select <strong>Export</strong>: CSV, Excel (XLSX), PDF, or an XAF
+audit file where the report supports it. PDFs are prepared in the background;
+<strong>Your exports</strong> lists finished files to <strong>Download</strong> again later.</p>
+<p>Before opening exported files in a spreadsheet, review cells that begin with
+<code>=</code>, <code>+</code>, <code>-</code>, or <code>@</code>: spreadsheet software can run them as formulas.</p>
+<h2 id="financial-statements">Financial statements</h2>
+<figure class="shot"><img src="../assets/screenshots/financial-statements.png" alt="Financial statements comparing this year's profit and loss and balance sheet with the year before" width="1440" height="900" loading="lazy" decoding="async"></figure>
+<p><strong>Financial statements</strong> shows profit and loss and the balance sheet for a
+calendar year next to the year before, with revenue, profit, and equity at the
+top. While the year is still running, both years run from 1 January to the
+same day, so you compare like with like. These statements come from your
+bookkeeping; they are not filed with the Belastingdienst as they are.</p>
+<h2 id="vat">VAT</h2>
+<figure class="shot"><img src="../assets/screenshots/vat.png" alt="VAT page with four quarter cards and the current quarter's return laid out box by box" width="1440" height="900" loading="lazy" decoding="async"></figure>
+<p>The <strong>VAT</strong> page shows the year as four quarters. Each card shows the status
+(not started, in progress, ready to file, deadline passed), the amount to pay
+or reclaim, and the filing deadline: the last day of the month after the
+quarter. A quarter is <strong>Ready to file</strong> once it has ended and until its
+deadline.</p>
+<p>Select a quarter to open its return, laid out like the Belastingdienst form
+(boxes 1a to 5c). The amount to file is rounded to whole euros in your favour,
+with the exact amount shown next to it.</p>
+<p>Below the return:</p>
+<ul>
+<li><strong>Where the numbers come from</strong> breaks the quarter down per tax code, sales
+and purchases, with document counts.</li>
+<li><strong>Other declarations and checks</strong> covers intra-EU supplies (ICP), EU distance
+sales (OSS), and the small businesses scheme (KOR), each linking to its
+report.</li>
+</ul>
+<p>Export the return as CSV, XLSX, or PDF for your records.</p>
+<div class="callout callout-important" role="note">
+<p class="callout-title">Important</p>
+<p>Fiscal Fox does not file the return. Enter the amounts in Mijn
+Belastingdienst Zakelijk yourself. The current quarter can still change until
+it ends. The official links on the page open the Belastingdienst&#39;s pages
+(in Dutch).</p>
+</div>
+<p>See <a href="accounting.html#vat">Accounting rules</a> for how every box is calculated.</p>
+<h2 id="who-can-do-this">Who can do this</h2>
+<p>Everyone can view reports. Owners, admins, and accountants can export them. See
+<a href="index.html#roles">Roles</a>.</p>
+<!-- content:end -->
+      </article>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-prev" href="payments.html" rel="prev"><span class="pager-label">Previous</span> Payments</a>
+        <a class="pager-next" href="contracts.html" rel="next"><span class="pager-label">Next</span> Contracts</a>
+      </nav>
+    </main>
+    <nav class="docs-nav" aria-label="Documentation">
+      <p class="docs-nav-title" id="nav-manual">User manual</p>
+      <ul aria-labelledby="nav-manual">
+          <li><a href="index.html">Getting started</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="sales.html">Sales</a></li>
+          <li><a href="expenses.html">Expenses</a></li>
+          <li><a href="time-and-trips.html">Time and trips</a></li>
+          <li><a href="contacts.html">Contacts and catalog</a></li>
+          <li><a href="payments.html">Payments</a></li>
+          <li><a href="reports.html" aria-current="page">Reports and VAT</a></li>
+          <li><a href="contracts.html">Contracts</a></li>
+          <li><a href="bookkeeping.html">Bookkeeping</a></li>
+          <li><a href="imports-exports.html">Import and export</a></li>
+          <li><a href="activity-log.html">Activity log</a></li>
+          <li><a href="settings.html">Settings</a></li>
+          <li><a href="accounting.html">Accounting rules</a></li>
+      </ul>
+      <p class="docs-nav-title" id="nav-self-hosting">Self-hosting</p>
+      <ul aria-labelledby="nav-self-hosting">
+          <li><a href="../self-hosting/index.html">Install and run</a></li>
+          <li><a href="../self-hosting/configuration.html">Configuration</a></li>
+          <li><a href="../self-hosting/integrations.html">Integrations</a></li>
+          <li><a href="../self-hosting/production.html">Production checklist</a></li>
+          <li><a href="../self-hosting/backup-restore.html">Backup and restore</a></li>
+          <li><a href="../self-hosting/api.html">API</a></li>
+      </ul>
+    </nav>
+  </div>
+  <footer class="site-footer">
+    <div class="wrap footer-top">
+      <div class="footer-about">
+        <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="32" height="32"><span>Fiscal Fox</span></a>
+        <p>Self-hosted accounting for small businesses. A <a href="https://finance.synctune.it">Synctune Finance</a> project.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="index.html">User manual</a>
+        <a href="../self-hosting/index.html">Self-hosting</a>
+        <a href="https://synctune.it">Synctune</a>
+      </nav>
+    </div>
+    <div class="wrap footer-bottom">
+      <p>Documentation as of 15 November 2026. Not financial, tax or legal advice.</p>
+      <details class="privacy">
+        <summary>No cookies. No tracking.</summary>
+        <p>This website uses no analytics, cookies, scripts, web fonts or third-party widgets. Images and styles are local files. The hosting provider may process standard request data. Linked websites have their own privacy policies.</p>
+      </details>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Install and run | Fiscal Fox</title>
+  <meta name="description" content="What Fiscal Fox runs on, its requirements and how to start an installation with Docker Compose.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101318" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://fiscal-fox.synctune.it/self-hosting/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fiscal Fox">
+  <meta property="og:title" content="Install and run | Fiscal Fox">
+  <meta property="og:description" content="What Fiscal Fox runs on, its requirements and how to start an installation with Docker Compose.">
+  <meta property="og:url" content="https://fiscal-fox.synctune.it/self-hosting/">
+  <meta property="og:image" content="https://fiscal-fox.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Fiscal Fox logo, a fox with euro signs for eyes, next to the words Fiscal Fox.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="40" height="40"><span>Fiscal Fox</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html#features">Features</a>
+        <a href="../manual/index.html">User manual</a>
+        <a href="index.html" aria-current="page">Self-hosting</a>
+        <a href="https://finance.synctune.it">Synctune Finance <span class="arrow" aria-hidden="true">&#8599;</span></a>
+      </nav>
+    </div>
+  </header>
+  <div class="wrap docs-layout">
+    <main id="main" class="docs-main" tabindex="-1">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../index.html">Home</a></li>
+          <li><span aria-current="page">Self-hosting</span></li>
+        </ol>
+      </nav>
+      <article class="prose">
+<!-- content:start -->
+<h1>Install and run</h1>
+<div class="callout callout-important" role="note">
+<p class="callout-title">Availability</p>
+<p>Fiscal Fox is in development. Its source is not public and there is no
+public release yet. This guide describes how an installation runs, for people
+who already have a copy of Fiscal Fox.</p>
+</div>
+<p>Fiscal Fox runs on your own infrastructure with Docker Compose. One
+installation can hold several organizations, each with its own separate
+financial data.</p>
+<h2 id="what-runs">What runs</h2>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Services in a Fiscal Fox installation">
+<table>
+<thead><tr><th scope="col">Service</th><th scope="col">What it does</th></tr></thead>
+<tbody>
+<tr><td>Web</td><td>nginx serving the browser app.</td></tr>
+<tr><td>API</td><td>The REST API, sign-in, permissions, and webhook endpoints.</td></tr>
+<tr><td>Worker</td><td>Background jobs: email delivery, receipt reading, calendar sync, report exports, and generated files.</td></tr>
+<tr><td>PostgreSQL</td><td>The authoritative ledger. Every organization&#39;s data is separated with row-level security.</td></tr>
+<tr><td>Valkey</td><td>The job queue.</td></tr>
+<tr><td>SeaweedFS</td><td>S3-compatible storage for receipts, contracts, and immutable generated files.</td></tr>
+<tr><td>Mailpit</td><td>Catches outgoing email during local use. Replace it with a real SMTP service in production.</td></tr>
+<tr><td>Database owner and migrate</td><td>One-shot services that set database ownership and apply migrations before the API starts.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The API records audit events and background work in the same transaction as
+the business change. Workers pick up that work once and write immutable file
+records with their SHA-256 fingerprints. Provider credentials are optional:
+an integration that is not configured fails clearly instead of pretending to
+succeed.</p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>Node.js 26</li>
+<li>Corepack with pnpm 11.13.1</li>
+<li>Docker with Compose</li>
+<li>curl</li>
+</ul>
+<h2 id="start-a-local-installation">Start a local installation</h2>
+<p>From the Fiscal Fox directory:</p>
+<pre tabindex="0"><code class="language-bash">cp .env.example .env
+. scripts/load-env.sh
+corepack pnpm install --frozen-lockfile
+docker compose config --quiet
+docker compose up -d --build --wait</code></pre>
+<p><code>scripts/load-env.sh</code> must be sourced, not executed. It exports the
+<code>.env</code> values into the current shell, so host-side commands such as
+migrations use the same configuration that Compose reads.</p>
+<p>Once the stack is healthy, open:</p>
+<div class="table-wrap" tabindex="0" role="region" aria-label="Local addresses">
+<table>
+<thead><tr><th scope="col">Service</th><th scope="col">Address</th></tr></thead>
+<tbody>
+<tr><td>Web app</td><td><code>http://localhost:5173</code></td></tr>
+<tr><td>API health</td><td><code>http://localhost:3000/health</code></td></tr>
+<tr><td>API documentation</td><td><code>http://localhost:3000/api/docs</code></td></tr>
+<tr><td>Mailpit</td><td><code>http://localhost:8025</code></td></tr>
+<tr><td>SeaweedFS S3</td><td><code>http://localhost:8333</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>On a new installation, the first person to sign up creates the first local
+account and organization. Everyone else joins through an invitation. See
+<a href="../manual/index.html">Getting started</a>.</p>
+<div class="callout callout-warning" role="note">
+<p class="callout-title">Warning</p>
+<p>The local Compose setup uses development secrets and plain HTTP. Replace
+every development secret before any non-local deployment. Production needs
+TLS, secure cookies, trusted origins, external secret management, restricted
+network access, and tested backups. See the
+<a href="production.html">Production checklist</a>.</p>
+</div>
+<h2 id="whats-included">What&#39;s included</h2>
+<ul>
+<li>Email and password sign-in with passkeys, and first-user onboarding.</li>
+<li>Organization memberships with role and permission checks, enforced by
+PostgreSQL row-level security.</li>
+<li>A Dutch chart of accounts, VAT codes, fiscal periods, journals, XAF 4.0
+exports, UBL documents, CSV import dry runs, and reports.</li>
+<li>The quarterly Dutch VAT return (boxes 1a to 5c, filing amounts and
+deadline) with ICP, OSS, and KOR checks.</li>
+<li>A widget dashboard, financial statements, cash flow, and customer,
+supplier, product, cost, and trip insights.</li>
+<li>Sales documents, expenses (including drafts that wait for their receipt),
+draft contacts, Stripe Connect payments, contracts, time, trips, calendar
+and maps connections, and immutable generated files.</li>
+<li>An OpenAPI 3.1 description of the REST API. See <a href="api.html">API</a>.</li>
+</ul>
+<h2 id="not-included">Not included</h2>
+<p>Fiscal Fox does not provide a bank connection or feed, hosted business email,
+native mobile or desktop apps, Peppol transport, or direct tax filing. XAF and
+UBL exports support hand-off workflows; they are not filing or delivery
+services.</p>
+<h2 id="next-steps">Next steps</h2>
+<ul>
+<li><a href="configuration.html">Configuration</a>: environment variables, database roles, and secrets.</li>
+<li><a href="integrations.html">Integrations</a>: email, storage, Stripe, DocuSign, calendars, maps, receipt reading, and Peppol files.</li>
+<li><a href="production.html">Production checklist</a>: what to put in place before real use.</li>
+<li><a href="backup-restore.html">Backup and restore</a>: signed backups and the trusted restore process.</li>
+<li><a href="api.html">API</a>: the REST API and its OpenAPI document.</li>
+</ul>
+<!-- content:end -->
+      </article>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-next" href="configuration.html" rel="next"><span class="pager-label">Next</span> Configuration</a>
+      </nav>
+    </main>
+    <nav class="docs-nav" aria-label="Documentation">
+      <p class="docs-nav-title" id="nav-manual">User manual</p>
+      <ul aria-labelledby="nav-manual">
+          <li><a href="../manual/index.html">Getting started</a></li>
+          <li><a href="../manual/dashboard.html">Dashboard</a></li>
+          <li><a href="../manual/sales.html">Sales</a></li>
+          <li><a href="../manual/expenses.html">Expenses</a></li>
+          <li><a href="../manual/time-and-trips.html">Time and trips</a></li>
+          <li><a href="../manual/contacts.html">Contacts and catalog</a></li>
+          <li><a href="../manual/payments.html">Payments</a></li>
+          <li><a href="../manual/reports.html">Reports and VAT</a></li>
+          <li><a href="../manual/contracts.html">Contracts</a></li>
+          <li><a href="../manual/bookkeeping.html">Bookkeeping</a></li>
+          <li><a href="../manual/imports-exports.html">Import and export</a></li>
+          <li><a href="../manual/activity-log.html">Activity log</a></li>
+          <li><a href="../manual/settings.html">Settings</a></li>
+          <li><a href="../manual/accounting.html">Accounting rules</a></li>
+      </ul>
+      <p class="docs-nav-title" id="nav-self-hosting">Self-hosting</p>
+      <ul aria-labelledby="nav-self-hosting">
+          <li><a href="index.html" aria-current="page">Install and run</a></li>
+          <li><a href="configuration.html">Configuration</a></li>
+          <li><a href="integrations.html">Integrations</a></li>
+          <li><a href="production.html">Production checklist</a></li>
+          <li><a href="backup-restore.html">Backup and restore</a></li>
+          <li><a href="api.html">API</a></li>
+      </ul>
+    </nav>
+  </div>
+  <footer class="site-footer">
+    <div class="wrap footer-top">
+      <div class="footer-about">
+        <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="32" height="32"><span>Fiscal Fox</span></a>
+        <p>Self-hosted accounting for small businesses. A <a href="https://finance.synctune.it">Synctune Finance</a> project.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="../manual/index.html">User manual</a>
+        <a href="index.html">Self-hosting</a>
+        <a href="https://synctune.it">Synctune</a>
+      </nav>
+    </div>
+    <div class="wrap footer-bottom">
+      <p>Documentation as of 15 November 2026. Not financial, tax or legal advice.</p>
+      <details class="privacy">
+        <summary>No cookies. No tracking.</summary>
+        <p>This website uses no analytics, cookies, scripts, web fonts or third-party widgets. Images and styles are local files. The hosting provider may process standard request data. Linked websites have their own privacy policies.</p>
+      </details>
+    </div>
+  </footer>
+</body>
+</html>

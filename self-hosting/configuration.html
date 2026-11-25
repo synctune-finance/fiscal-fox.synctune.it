@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configuration | Fiscal Fox</title>
+  <meta name="description" content="Environment variables, database roles, secrets and service boundaries for a Fiscal Fox installation.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101318" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://fiscal-fox.synctune.it/self-hosting/configuration.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fiscal Fox">
+  <meta property="og:title" content="Configuration | Fiscal Fox">
+  <meta property="og:description" content="Environment variables, database roles, secrets and service boundaries for a Fiscal Fox installation.">
+  <meta property="og:url" content="https://fiscal-fox.synctune.it/self-hosting/configuration.html">
+  <meta property="og:image" content="https://fiscal-fox.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Fiscal Fox logo, a fox with euro signs for eyes, next to the words Fiscal Fox.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="40" height="40"><span>Fiscal Fox</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html#features">Features</a>
+        <a href="../manual/index.html">User manual</a>
+        <a href="index.html" aria-current="true">Self-hosting</a>
+        <a href="https://finance.synctune.it">Synctune Finance <span class="arrow" aria-hidden="true">&#8599;</span></a>
+      </nav>
+    </div>
+  </header>
+  <div class="wrap docs-layout">
+    <main id="main" class="docs-main" tabindex="-1">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="index.html">Self-hosting</a></li>
+          <li><span aria-current="page">Configuration</span></li>
+        </ol>
+      </nav>
+      <article class="prose">
+<!-- content:start -->
+<h1>Configuration</h1>
+<p><code>.env.example</code> lists supported variables. Required application groups are:</p>
+<ul>
+<li>URLs/runtime: <code>NODE_ENV</code>, <code>APP_BASE_URL</code>, <code>API_BASE_URL</code>, <code>PORT</code></li>
+<li>PostgreSQL: <code>DATABASE_URL</code>, optional privileged
+<code>DATABASE_MIGRATION_URL</code>, and worker <code>WORKER_DATABASE_URL</code></li>
+<li>Jobs: <code>VALKEY_URL</code></li>
+<li>Security: <code>AUTH_SECRET</code>, <code>ENCRYPTION_KEY</code></li>
+<li>S3/SeaweedFS: <code>S3_ENDPOINT</code>, <code>S3_PUBLIC_ENDPOINT</code>, <code>S3_REGION</code>, <code>S3_BUCKET</code>,
+access key, secret key, path-style mode, and SeaweedFS signing/encryption keys.
+Browsers upload receipts and contract PDFs straight to <code>S3_PUBLIC_ENDPOINT</code>
+with a short-lived signed URL, so that endpoint must be reachable from users&#39;
+browsers and allow cross-origin <code>PUT</code> requests from <code>APP_BASE_URL</code>.</li>
+<li>SMTP: host, port, TLS mode, optional credentials, and <code>SMTP_FROM</code></li>
+<li>Optional providers: Stripe, DocuSign, Google Calendar, Nominatim, OSRM, and AI</li>
+</ul>
+<p>For host-side commands, load the file into the current Bash shell first:</p>
+<pre tabindex="0"><code class="language-bash">. scripts/load-env.sh
+corepack pnpm db:migrate</code></pre>
+<p>Set <code>FISCAL_FOX_ENV_FILE</code> before sourcing to use another file. Compose loads
+<code>.env</code> itself. <code>WORKER_DATABASE_URL</code> selects the worker&#39;s least-privilege role.
+The worker falls back to <code>DATABASE_URL</code> only for explicit host development;
+production requires <code>WORKER_DATABASE_URL</code>.</p>
+<p>Use different least-privilege PostgreSQL roles for migrations, API, and worker.
+The Compose initialization creates <code>fiscal_fox_migrator</code>, <code>fiscal_fox_app</code>, and
+<code>fiscal_fox_worker</code>; these literal role names are required in production and
+production passwords must not reuse development values.
+Before migrations, the one-shot <code>database-owner</code> service reconciles database and
+<code>public</code> schema ownership to <code>fiscal_fox_migrator</code>, including existing Compose
+volumes. Non-Compose installations must establish that ownership with a database
+administrator before running migrations.
+<code>DATABASE_APP_ROLE</code>, <code>DATABASE_WORKER_ROLE</code>, and <code>DATABASE_MIGRATION_ROLE</code>
+identify the expected server-reported roles. The migrator has <code>BYPASSRLS</code>;
+application roles do not.</p>
+<p>Compose keeps credentials service-specific:</p>
+<ul>
+<li>API receives the app <code>DATABASE_URL</code>, authentication/encryption settings,
+storage, Stripe webhook/Connect, the non-secret <code>DOCUSIGN_ENABLED</code> indicator,
+Google Calendar, and map providers.</li>
+<li>Worker receives only <code>WORKER_DATABASE_URL</code>, Valkey, encryption, storage, SMTP,
+and the provider credentials needed for background delivery/extraction,
+including all DocuSign account, user, integration, and private-key values.</li>
+<li>Database-owner receives only the bootstrap administrator connection settings
+required to transfer database and schema ownership before migration.</li>
+<li>Migrate receives only <code>DATABASE_MIGRATION_URL</code>.</li>
+<li>Web/nginx receives no provider or database secrets.</li>
+</ul>
+<p><code>DOCUSIGN_ENABLED=true</code> must agree between API and worker configuration and
+requires worker integration key, user ID, account ID, private key, and an HTTP(S)
+base path. When disabled, those worker credentials may be omitted.</p>
+<p>Configuration aggregation parses database URL usernames, requires each to match
+its declared service role, and rejects duplicate API, worker, migrator, or
+database-admin identities. Validation errors report only the service, variable,
+hostname, and role; they never echo a URL or password. API and worker startup
+require <code>session_user = current_user = expected role</code>, <code>NOSUPERUSER</code>,
+<code>NOBYPASSRLS</code>, <code>NOCREATEDB</code>, <code>NOCREATEROLE</code>, <code>NOREPLICATION</code>, and <code>NOINHERIT</code>.
+Recursive <code>pg_auth_members</code> traversal rejects every unapproved membership,
+including built-in PostgreSQL capability roles. The worker has no access to
+authentication token, credential, session,
+verification, or passkey tables; it can select only <code>auth_user.id</code> and
+<code>auth_user.email</code> for attributed background accounting work. Run
+<code>corepack pnpm compose:config:verify</code> to assert the rendered Compose boundary.</p>
+<p>For host development only, omitting <code>WORKER_DATABASE_URL</code> explicitly falls back
+to <code>DATABASE_URL</code> and emits a warning. That fallback URL must still authenticate
+as <code>DATABASE_WORKER_ROLE</code>, and runtime role validation still applies. Production
+never permits the fallback.</p>
+<p>The plain <code>DATABASE_*</code>, <code>VALKEY_URL</code>, <code>S3_ENDPOINT</code>, and <code>SMTP_*</code> values in
+<code>.env.example</code> are host-development endpoints. Compose deliberately wires API,
+worker, and migration containers to <code>postgres</code>, <code>valkey</code>, <code>seaweedfs</code>, and
+<code>mailpit</code> service DNS instead. Advanced deployments may override only that
+internal wiring with <code>COMPOSE_DATABASE_URL</code>, <code>COMPOSE_WORKER_DATABASE_URL</code>,
+<code>COMPOSE_DATABASE_MIGRATION_URL</code>, <code>COMPOSE_VALKEY_URL</code>,
+<code>COMPOSE_S3_ENDPOINT</code>, <code>COMPOSE_SMTP_HOST</code>, and <code>COMPOSE_SMTP_PORT</code>.</p>
+<p><code>AUTH_SECRET</code> and <code>ENCRYPTION_KEY</code> must be at least 32 characters. Store secrets
+outside source control and rotate them through a rehearsed process. Set the
+public S3 endpoint to a browser-reachable TLS URL. Restrict PostgreSQL, Valkey,
+SeaweedFS administration ports, and Mailpit from public networks.</p>
+<p>Compose does not accept <code>SESSION_GENERATION</code> in the API container. A one-shot
+initializer creates a random mode-<code>600</code>, API-owned value in the private
+<code>session-generation</code> volume, and API startup waits for it and mounts it read-only.
+Host deployments may use a mode-<code>600</code> <code>SESSION_GENERATION_FILE</code>; the environment
+fallback must be explicit and at least 32 version-safe characters.</p>
+<p><code>BACKUP_HMAC_KEY_FILE</code>, <code>BACKUP_HMAC_KEY_ID</code>, and
+<code>FISCAL_FOX_RELEASE_REVISION</code> are host-only backup metadata settings and are
+never passed into application containers. The key file must be outside the
+application directory, build context, and backup tree with mode <code>600</code>; see
+<a href="backup-restore.html">Backup and restore</a>.
+Backup and restore share one deployment-wide atomic operation lock. Override
+<code>FISCAL_FOX_OPERATION_LOCK_DIR</code> only with an operator-owned path; stale removal
+requires the explicit <code>FISCAL_FOX_OPERATION_LOCK_BREAK_STALE=1</code> recovery action.</p>
+<p>Demo-only variables are <code>ALLOW_DEMO_SEED</code>, <code>DEMO_ORGANIZATION_ID</code>, and
+<code>DEMO_USER_EMAIL</code>. They are never required by normal runtime services.</p>
+<!-- content:end -->
+      </article>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-prev" href="index.html" rel="prev"><span class="pager-label">Previous</span> Install and run</a>
+        <a class="pager-next" href="integrations.html" rel="next"><span class="pager-label">Next</span> Integrations</a>
+      </nav>
+    </main>
+    <nav class="docs-nav" aria-label="Documentation">
+      <p class="docs-nav-title" id="nav-manual">User manual</p>
+      <ul aria-labelledby="nav-manual">
+          <li><a href="../manual/index.html">Getting started</a></li>
+          <li><a href="../manual/dashboard.html">Dashboard</a></li>
+          <li><a href="../manual/sales.html">Sales</a></li>
+          <li><a href="../manual/expenses.html">Expenses</a></li>
+          <li><a href="../manual/time-and-trips.html">Time and trips</a></li>
+          <li><a href="../manual/contacts.html">Contacts and catalog</a></li>
+          <li><a href="../manual/payments.html">Payments</a></li>
+          <li><a href="../manual/reports.html">Reports and VAT</a></li>
+          <li><a href="../manual/contracts.html">Contracts</a></li>
+          <li><a href="../manual/bookkeeping.html">Bookkeeping</a></li>
+          <li><a href="../manual/imports-exports.html">Import and export</a></li>
+          <li><a href="../manual/activity-log.html">Activity log</a></li>
+          <li><a href="../manual/settings.html">Settings</a></li>
+          <li><a href="../manual/accounting.html">Accounting rules</a></li>
+      </ul>
+      <p class="docs-nav-title" id="nav-self-hosting">Self-hosting</p>
+      <ul aria-labelledby="nav-self-hosting">
+          <li><a href="index.html">Install and run</a></li>
+          <li><a href="configuration.html" aria-current="page">Configuration</a></li>
+          <li><a href="integrations.html">Integrations</a></li>
+          <li><a href="production.html">Production checklist</a></li>
+          <li><a href="backup-restore.html">Backup and restore</a></li>
+          <li><a href="api.html">API</a></li>
+      </ul>
+    </nav>
+  </div>
+  <footer class="site-footer">
+    <div class="wrap footer-top">
+      <div class="footer-about">
+        <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="32" height="32"><span>Fiscal Fox</span></a>
+        <p>Self-hosted accounting for small businesses. A <a href="https://finance.synctune.it">Synctune Finance</a> project.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="../manual/index.html">User manual</a>
+        <a href="index.html">Self-hosting</a>
+        <a href="https://synctune.it">Synctune</a>
+      </nav>
+    </div>
+    <div class="wrap footer-bottom">
+      <p>Documentation as of 15 November 2026. Not financial, tax or legal advice.</p>
+      <details class="privacy">
+        <summary>No cookies. No tracking.</summary>
+        <p>This website uses no analytics, cookies, scripts, web fonts or third-party widgets. Images and styles are local files. The hosting provider may process standard request data. Linked websites have their own privacy policies.</p>
+      </details>
+    </div>
+  </footer>
+</body>
+</html>

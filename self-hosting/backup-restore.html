@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Backup and restore | Fiscal Fox</title>
+  <meta name="description" content="Signed Fiscal Fox backups, the trusted restore process, credential invalidation and restore drills.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101318" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://fiscal-fox.synctune.it/self-hosting/backup-restore.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fiscal Fox">
+  <meta property="og:title" content="Backup and restore | Fiscal Fox">
+  <meta property="og:description" content="Signed Fiscal Fox backups, the trusted restore process, credential invalidation and restore drills.">
+  <meta property="og:url" content="https://fiscal-fox.synctune.it/self-hosting/backup-restore.html">
+  <meta property="og:image" content="https://fiscal-fox.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Fiscal Fox logo, a fox with euro signs for eyes, next to the words Fiscal Fox.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="40" height="40"><span>Fiscal Fox</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html#features">Features</a>
+        <a href="../manual/index.html">User manual</a>
+        <a href="index.html" aria-current="true">Self-hosting</a>
+        <a href="https://finance.synctune.it">Synctune Finance <span class="arrow" aria-hidden="true">&#8599;</span></a>
+      </nav>
+    </div>
+  </header>
+  <div class="wrap docs-layout">
+    <main id="main" class="docs-main" tabindex="-1">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="index.html">Self-hosting</a></li>
+          <li><span aria-current="page">Backup and restore</span></li>
+        </ol>
+      </nav>
+      <article class="prose">
+<!-- content:start -->
+<h1>Backup and restore</h1>
+<p>Fiscal Fox backups contain PostgreSQL application data and the SeaweedFS volume.
+They are authenticated with an external HMAC-SHA256 key before they are accepted
+for restore. Plain SHA-256 checksums detect accidental damage but do not
+authenticate a backup.</p>
+<p>Create a random key of at least 32 bytes on the backup host:</p>
+<pre tabindex="0"><code class="language-bash">install -d -m 700 /etc/fiscal-fox
+openssl rand 48 &gt; /etc/fiscal-fox/backup-hmac.key
+chmod 600 /etc/fiscal-fox/backup-hmac.key
+export BACKUP_HMAC_KEY_FILE=/etc/fiscal-fox/backup-hmac.key
+export BACKUP_HMAC_KEY_ID=backup-key-2026-01
+export BACKUP_CATALOG_FILE=/var/lib/fiscal-fox-catalog/backup-catalog.json
+export BACKUP_CATALOG_HEAD_FILE=/var/lib/fiscal-fox-catalog-head/backup-catalog-head.json
+corepack pnpm backup</code></pre>
+<p>The key, catalog, and catalog head must remain outside the application directory, Docker
+build context, and backup directory tree. The head must also be outside the
+catalog directory. Store the key in a secret manager and the head checkpoint in
+a separately protected path; never copy either beside a backup.
+<code>BACKUP_HMAC_KEY_ID</code> is a non-secret rotation label. Retain each old key securely
+until every backup signed by it expires, and test restoration before retiring it.</p>
+<p>Production refuses unsigned backup creation and restore. Development/test may
+use the explicit <code>--allow-unsigned</code> flag, which emits a warning:</p>
+<pre tabindex="0"><code class="language-bash">corepack pnpm backup -- --allow-unsigned
+corepack pnpm backup:verify -- --allow-unsigned ../fiscal-fox-backups/&lt;backup-id&gt;</code></pre>
+<p>Backup and restore acquire the same deployment-wide atomic directory lock before
+catalog or quiescence work. Concurrent backup/backup and backup/restore attempts
+fail safely. The default lock is beside the application directory; production should set
+<code>FISCAL_FOX_OPERATION_LOCK_DIR</code> to an operator-owned location. A dead or remote
+lock is never removed automatically; inspect it before explicitly setting
+<code>FISCAL_FOX_OPERATION_LOCK_BREAK_STALE=1</code>.</p>
+<p>Each backup uses its random UUID <code>backupId</code> as an exclusively created directory;
+second-resolution names and <code>mkdir -p</code> reuse are not used. The backup command
+quiesces API and worker writes, dumps PostgreSQL in custom
+format, stops SeaweedFS while streaming its numeric-owner archive, and writes:</p>
+<ul>
+<li><code>postgres.dump</code></li>
+<li><code>seaweedfs.tar</code></li>
+<li><code>manifest.json</code></li>
+<li><code>migrations.json</code>, containing the release&#39;s migration count and hashes</li>
+<li><code>SHA256SUMS</code></li>
+<li><code>SHA256SUMS.hmac</code></li>
+</ul>
+<p>Directories are mode <code>700</code>; files are mode <code>600</code>. Environment values,
+interpolated Compose configuration, catalog, generation, and HMAC key material
+are never persisted in a backup.
+<code>FISCAL_FOX_RELEASE_REVISION</code> may provide a non-secret release identifier.</p>
+<h2 id="trusted-restore-architecture">Trusted restore architecture</h2>
+<p>Restore requires the same application release and its migration set:</p>
+<pre tabindex="0"><code class="language-bash">export BACKUP_HMAC_KEY_FILE=/etc/fiscal-fox/backup-hmac.key
+export BACKUP_CATALOG_FILE=/var/lib/fiscal-fox-catalog/backup-catalog.json
+export BACKUP_CATALOG_HEAD_FILE=/var/lib/fiscal-fox-catalog-head/backup-catalog-head.json
+corepack pnpm restore -- ../fiscal-fox-backups/&lt;backup-id&gt; --backup-id &lt;manifest-backup-id&gt; --force</code></pre>
+<p>Before stopping services or replacing data, restore:</p>
+<ol>
+<li>opens each required source artifact without following symlinks and copies it
+into a cryptographically random, mode-<code>700</code>, operator-owned staging directory;</li>
+<li>fsyncs mode-<code>600</code> staged copies and the staging directory;</li>
+<li>verifies the HMAC, exact checksum manifest, permissions, and release migration
+attestation over the staged copies;</li>
+<li>verifies the manifest ID and digest against the external, chained,
+HMAC-authenticated backup catalog and requires its final entry to exactly match
+the separately stored HMAC-authenticated head checkpoint;</li>
+<li>validates the staged PostgreSQL and SeaweedFS archive structure.</li>
+</ol>
+<p>After authentication, restore builds a uniquely named temporary database and
+SeaweedFS volume while the original database remains active. It applies trusted
+migrations, restores allowlisted data, invalidates credentials, reconciles ACLs
+and jobs, and completes migration/integrity checks against that temporary
+database. A failure in this phase removes only temporary state and leaves the
+original database and services restartable.</p>
+<p>Only after the temporary target passes does restore stop web, API, worker, and
+migration services and confirm both health endpoints are down. It acquires a
+cluster-wide PostgreSQL advisory restore lock, temporarily changes the app and
+worker roles to <code>NOLOGIN</code>, terminates and verifies the absence of their database
+sessions, then captures the live security overlay in a read-only repeatable-read
+transaction and applies it to the temporary database. The overlay includes a
+fresh operator nonce and capture timestamp and is HMAC-authenticated immediately.
+Any stop, lock, freshness, capture, overlay, or final pre-swap validation failure
+aborts without renaming the original database.</p>
+<p>The source directory must contain only the exact backup artifact set. Symlinks,
+non-regular files, unexpected entries, unsafe checksum paths, and files not owned
+by the restore operator are rejected. Restore never reads the source directory
+again after staging, so replacing an original archive cannot change the verified
+restore input. The private staging directory is removed by an exit trap.</p>
+<p>The PostgreSQL archive is never trusted as schema or executable code. Admin is
+used only to create the temporary database and perform the final database rename;
+all migration, data, ACL, and validation work runs as <code>fiscal_fox_migrator</code>.
+Restore then:</p>
+<ol>
+<li>runs the release&#39;s migrations as <code>fiscal_fox_migrator</code> into a clean database;</li>
+<li>validates the resulting migration journal count and every migration checksum;</li>
+<li>derives an allowlist from trusted public tables and sequences;</li>
+<li>temporarily removes trusted foreign keys and disables trusted user triggers;</li>
+<li>runs <code>pg_restore --data-only --no-owner --no-privileges</code> as the migrator;</li>
+<li>invalidates restored credentials and tokenized deliveries before constraints
+are re-enabled or any application service starts;</li>
+<li>recreates trusted constraints, enables triggers, and revalidates migrations;</li>
+<li>applies the release&#39;s direct ACL SQL—never an archive-provided function;</li>
+<li>rejects unexpected SECURITY DEFINER functions, event triggers, extensions,
+procedural languages, schemas, owners, or runtime-role memberships;</li>
+<li>reconciles queue state and validates the complete temporary target;</li>
+<li>under quiescence and the advisory lock, renames the original database to a
+retained rollback name and the validated temporary database to the configured
+target name;</li>
+<li>activates staged SeaweedFS, clears Valkey, rotates session generation, and
+health-checks API and web.</li>
+</ol>
+<p>Migration journal attestation matches trusted entries by chronological
+<code>created_at</code>, hash, and order. Serial ID gaps are accepted; unknown, future,
+missing, reordered, or hash-mismatched entries are rejected.</p>
+<p>If a failure occurs after database rename starts, restore never creates or drops
+an empty replacement. It preserves the restored target, retained rollback
+database, and any unswapped temporary state, leaves application services stopped,
+and keeps runtime roles <code>NOLOGIN</code>. The operator must inspect both databases,
+activate one deliberately, restore role login, and restart Compose. Successful
+restore also retains the rollback database until deliberate post-validation
+cleanup.</p>
+<h2 id="credential-invalidation-policy">Credential invalidation policy</h2>
+<p>Every restore forces all users to authenticate again. These ephemeral bearer
+credentials are not restored, or are cleared before application startup:</p>
+<ul>
+<li><code>auth_session</code> sessions and cookies;</li>
+<li><code>auth_verification</code> password-reset, email-verification, OAuth-state, and other
+transient verification values;</li>
+<li><code>organization_invitations</code> invitation tokens;</li>
+<li><code>public_document_tokens</code> quotation, invoice, payment, signing, and download
+links;</li>
+<li><code>contract_public_tokens</code> built-in contract signing links;</li>
+<li>OAuth access, refresh, and ID tokens stored on <code>auth_account</code> rows.</li>
+</ul>
+<p>When the current database is accessible, restore captures a private,
+HMAC-authenticated security overlay after every application writer is quiesced.
+The exact current users, password hashes, passkey factors, memberships, and roles
+are reapplied, so post-backup deletions, revocations, and role reductions dominate
+older backup state. A revocation committed before the quiescence boundary is in
+the overlay; attempts after the boundary cannot open a runtime-role connection.
+Backup-only identities are left inert.</p>
+<p>Disaster recovery (<code>--disaster-recovery</code>), or inability to authenticate current
+security state, securely quarantines all restored identities: password/provider
+accounts and passkeys are deleted, memberships are removed, and verification
+state remains empty. Recover exactly one deliberate owner with a private mode-600
+password file:</p>
+<pre tabindex="0"><code class="language-bash">scripts/recover-bootstrap-owner.sh user@example.com &lt;organization-id&gt; \
+  /secure/recovery-password --force</code></pre>
+<p>The dangerous <code>--preserve-backup-identities</code> option is available only with
+<code>--confirm-preserve-backup-identities</code>; it should not be used for normal recovery.
+It is audited operationally and still does not restore sessions or bearer tokens.</p>
+<p>The live security overlay also captures current calendar, Stripe, AI, and
+signature-provider security state. Current revocations, disabled capabilities,
+credential rotations, and provider changes override older backup state.
+Disaster recovery and the identity-preservation override securely quarantine
+external integrations: calendar tokens and source URLs are cleared, Stripe
+charges and payouts are disabled, external AI credentials are removed, and
+DocuSign use is reset to the built-in provider. Historical business identifiers
+and non-secret configuration remain available for review. Operators must
+reauthorize or re-enter credentials before provider use resumes.</p>
+<p>Restore never automatically republishes backed-up work. Background jobs are
+cancelled, inbox/outbox events are dead-lettered, recurring schedules are
+disabled, exports cannot retry, and tokenized deliveries/reminders are marked
+uncertain. This includes calendar, Stripe, DocuSign, mail, AI, map, and document
+provider work. Pure internal deterministic jobs also require explicit operator
+review before republishing. Each organization receives a
+<code>restore.credentials_invalidated</code> audit event listing quarantined integrations,
+blocked work, and required operator actions.</p>
+<p>On a fresh Compose volume, <code>session-generation-init</code> creates the private random
+value with mode <code>600</code> and API ownership before API starts; API mounts it read-only.
+Before application restart, restore atomically rotates the private
+<code>session-generation</code> Docker volume mounted read-only by the API and uses its value
+as the session cookie-cache version. The volume is outside PostgreSQL, the
+backup set, and the image/build context. Host deployments may instead provide
+<code>SESSION_GENERATION_FILE</code> or <code>SESSION_GENERATION</code>. Cached signed session cookies
+from before restore are therefore rejected even when <code>AUTH_SECRET</code> is unchanged.</p>
+<p>Each signed backup has a random <code>backupId</code>, parent ID, release/migration metadata,
+and manifest digest in the external mode-600 catalog. Backup atomically appends
+the catalog and then atomically updates the separate mode-600 head with the final
+backup ID, sequence, and entry digest. Restore rejects a truncated or older
+catalog even when every remaining entry has a valid HMAC. A crash between the two
+atomic updates fails closed and requires operator reconciliation.</p>
+<p>Store the head in a WORM store, secret manager, or remote monotonic checkpoint
+service for stronger rollback resistance; materialize the expected checkpoint as
+<code>BACKUP_CATALOG_HEAD_FILE</code> before backup or restore. Restore requires the exact ID
+and accepts the catalog latest by default. An older catalog entry requires both
+<code>--allow-rollback</code> and <code>--confirm-rollback &lt;backup-id&gt;</code>. Intentional catalog
+rollback additionally requires an independently selected old catalog and an
+explicit checkpoint update:</p>
+<pre tabindex="0"><code class="language-bash">node scripts/backup-catalog.mjs checkpoint \
+  &quot;$BACKUP_CATALOG_FILE&quot; &quot;$BACKUP_HMAC_KEY_FILE&quot; \
+  &quot;$BACKUP_CATALOG_HEAD_FILE&quot; &lt;expected-backup-id&gt; true</code></pre>
+<p>Record and approve that checkpoint operation separately. Replacing a backup
+directory or catalog with an older signed set cannot satisfy the requested ID and
+head checkpoint without this operator-controlled rollback flow.</p>
+<p>This data-only design intentionally rejects backups from a different migration
+set. Cross-version recovery requires first restoring with the matching release,
+then upgrading normally through reviewed migrations.</p>
+<h2 id="restore-drill">Restore drill</h2>
+<p>Use a disposable host or Compose project:</p>
+<ol>
+<li>Verify with <code>corepack pnpm backup:verify -- &lt;backup-directory&gt;</code>.</li>
+<li>Restore with the matching release and external HMAC key.</li>
+<li>Confirm API/web health and compare organization, journal, and artifact counts.</li>
+<li>Sample stored objects and compare their SHA-256 values with
+<code>stored_files.sha256</code> and <code>immutable_artifacts.sha256</code>.</li>
+<li>Exercise sign-in, a report, an artifact download, and a queued worker action.</li>
+<li>Record recovery time, recovery point, discrepancies, and corrective actions.</li>
+</ol>
+<p>Restore changes the active database and storage only at its validated swap
+boundary and refuses to run without <code>--force</code>. Never run a drill against valued
+production or local data.</p>
+<!-- content:end -->
+      </article>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-prev" href="production.html" rel="prev"><span class="pager-label">Previous</span> Production checklist</a>
+        <a class="pager-next" href="api.html" rel="next"><span class="pager-label">Next</span> API</a>
+      </nav>
+    </main>
+    <nav class="docs-nav" aria-label="Documentation">
+      <p class="docs-nav-title" id="nav-manual">User manual</p>
+      <ul aria-labelledby="nav-manual">
+          <li><a href="../manual/index.html">Getting started</a></li>
+          <li><a href="../manual/dashboard.html">Dashboard</a></li>
+          <li><a href="../manual/sales.html">Sales</a></li>
+          <li><a href="../manual/expenses.html">Expenses</a></li>
+          <li><a href="../manual/time-and-trips.html">Time and trips</a></li>
+          <li><a href="../manual/contacts.html">Contacts and catalog</a></li>
+          <li><a href="../manual/payments.html">Payments</a></li>
+          <li><a href="../manual/reports.html">Reports and VAT</a></li>
+          <li><a href="../manual/contracts.html">Contracts</a></li>
+          <li><a href="../manual/bookkeeping.html">Bookkeeping</a></li>
+          <li><a href="../manual/imports-exports.html">Import and export</a></li>
+          <li><a href="../manual/activity-log.html">Activity log</a></li>
+          <li><a href="../manual/settings.html">Settings</a></li>
+          <li><a href="../manual/accounting.html">Accounting rules</a></li>
+      </ul>
+      <p class="docs-nav-title" id="nav-self-hosting">Self-hosting</p>
+      <ul aria-labelledby="nav-self-hosting">
+          <li><a href="index.html">Install and run</a></li>
+          <li><a href="configuration.html">Configuration</a></li>
+          <li><a href="integrations.html">Integrations</a></li>
+          <li><a href="production.html">Production checklist</a></li>
+          <li><a href="backup-restore.html" aria-current="page">Backup and restore</a></li>
+          <li><a href="api.html">API</a></li>
+      </ul>
+    </nav>
+  </div>
+  <footer class="site-footer">
+    <div class="wrap footer-top">
+      <div class="footer-about">
+        <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="32" height="32"><span>Fiscal Fox</span></a>
+        <p>Self-hosted accounting for small businesses. A <a href="https://finance.synctune.it">Synctune Finance</a> project.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="../manual/index.html">User manual</a>
+        <a href="index.html">Self-hosting</a>
+        <a href="https://synctune.it">Synctune</a>
+      </nav>
+    </div>
+    <div class="wrap footer-bottom">
+      <p>Documentation as of 15 November 2026. Not financial, tax or legal advice.</p>
+      <details class="privacy">
+        <summary>No cookies. No tracking.</summary>
+        <p>This website uses no analytics, cookies, scripts, web fonts or third-party widgets. Images and styles are local files. The hosting provider may process standard request data. Linked websites have their own privacy policies.</p>
+      </details>
+    </div>
+  </footer>
+</body>
+</html>

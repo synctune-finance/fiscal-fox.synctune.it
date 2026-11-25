@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Integrations | Fiscal Fox</title>
+  <meta name="description" content="Email, storage, Stripe, DocuSign, calendars, maps, receipt reading and Peppol UBL files.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101318" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://fiscal-fox.synctune.it/self-hosting/integrations.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fiscal Fox">
+  <meta property="og:title" content="Integrations | Fiscal Fox">
+  <meta property="og:description" content="Email, storage, Stripe, DocuSign, calendars, maps, receipt reading and Peppol UBL files.">
+  <meta property="og:url" content="https://fiscal-fox.synctune.it/self-hosting/integrations.html">
+  <meta property="og:image" content="https://fiscal-fox.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Fiscal Fox logo, a fox with euro signs for eyes, next to the words Fiscal Fox.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="40" height="40"><span>Fiscal Fox</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html#features">Features</a>
+        <a href="../manual/index.html">User manual</a>
+        <a href="index.html" aria-current="true">Self-hosting</a>
+        <a href="https://finance.synctune.it">Synctune Finance <span class="arrow" aria-hidden="true">&#8599;</span></a>
+      </nav>
+    </div>
+  </header>
+  <div class="wrap docs-layout">
+    <main id="main" class="docs-main" tabindex="-1">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="index.html">Self-hosting</a></li>
+          <li><span aria-current="page">Integrations</span></li>
+        </ol>
+      </nav>
+      <article class="prose">
+<!-- content:start -->
+<h1>Integrations</h1>
+<h2 id="smtp-and-storage">SMTP and storage</h2>
+<p>SMTP delivery uses the configured server; local Compose points to Mailpit.
+SeaweedFS exposes an S3-compatible endpoint for receipts and immutable
+artifacts. Neither Mailpit nor development S3 credentials are production-safe.</p>
+<h2 id="stripe-and-docusign">Stripe and DocuSign</h2>
+<p>Stripe Connect supports onboarding, checkout links, webhooks, reconciliation,
+fees, refunds, and disputes when credentials are configured. Webhook signature
+verification requires <code>STRIPE_WEBHOOK_SECRET</code>. Checkout and refunds use direct
+charges in the organization&#39;s connected account, so the connected account owns
+the charge, Stripe fees, balance transactions, and refunds. Fiscal Fox does not
+create a platform application fee.</p>
+<p>DocuSign is optional; built-in signatures remain available. Set the API&#39;s
+non-secret <code>DOCUSIGN_ENABLED=true</code> indicator only when the worker has the
+integration key, user/account IDs, private key, and base path. Those provider
+credentials belong exclusively to the worker and must never be injected into
+the API or web containers. Built-in evidence records consent and audit data but
+is not a qualified electronic signature and may not satisfy every legal use
+case.</p>
+<h2 id="calendar-and-maps">Calendar and maps</h2>
+<p>Google Calendar requires OAuth credentials and the callback
+<code>/api/v1/calendar-connections/google/callback</code>. Read-only iCalendar URLs are an
+alternative. Nominatim and OSRM are optional conveniences; manual trip entry
+works without them. Respect provider usage policies and avoid sending
+confidential address data to public services without approval.</p>
+<h2 id="document-intelligence-and-ai">Document intelligence and AI</h2>
+<p>Local extraction is the default. OpenAI-compatible and Copilot SDK providers
+are optional. Enabling a remote provider may send receipt text or structured
+financial fields outside the deployment. Review retention, training, residency,
+and access terms, disclose the processing, minimize content, and obtain the
+required privacy approval. API keys are encrypted at rest, but encryption does
+not replace provider governance.</p>
+<p>Provider integrations have not been verified against live Stripe, DocuSign,
+Google, maps, SMTP, or AI accounts. Test each provider in a staging
+installation before relying on it.</p>
+<h2 id="peppol-ubl-validation">Peppol UBL validation</h2>
+<p>Invoice and credit-note exports implement the Peppol BIS Billing 3.0 semantic
+profile on UBL 2.1, including tax-category subtotals, discounts, payment data,
+party identifiers, invoice references, and monetary totals. Scheme codes follow
+OpenPeppol EAS v9.7 (released 2026-07-02). Fiscal Fox accepts only the schemes
+it can validate:</p>
+<ul>
+<li><code>0088</code> GLN</li>
+<li><code>0106</code> Dutch KVK</li>
+<li><code>0190</code> Dutch OIN</li>
+<li><code>0246</code> German GEBA</li>
+</ul>
+<p>Each supported identifier has format or check-digit validation. The removed
+<code>0193</code> scheme and other schemes without identifier validation are rejected
+rather than falsely accepted. Dutch eight-digit KVK identifiers can be derived
+as <code>0106</code>; other endpoints must be present on the finalized document.
+Email addresses are never endpoint identifiers.</p>
+<p>Before a document is rendered, Fiscal Fox checks mandatory structure,
+supported category identity rules, Dutch NL-R-001 through NL-R-005 and
+NL-R-007, BR-CO-25, BR-E-02, supported EAS schemes, currency precision, line
+allowances, VAT breakdowns, and document arithmetic. R003 uses only an explicit
+buyer reference or purchase-order reference; the seller&#39;s general reference is
+never substituted. Intra-EU category <code>K</code> requires a supply date or invoice
+period and an explicit delivery country from the document&#39;s delivery address
+(BR-IC-11/12). Credit notes do not emit the seller&#39;s collection account as a
+refund instruction. VAT subtotals sum the line tax amounts and validate rate
+arithmetic with the BR-S-09/BR-CO-17 rounding tolerance.</p>
+<p>These checks do not run the official UBL XSD or the full Peppol Schematron
+distribution. Fiscal Fox does not provide Peppol network transport; validate
+the XML with your access point&#39;s current official ruleset before sending it.</p>
+<!-- content:end -->
+      </article>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-prev" href="configuration.html" rel="prev"><span class="pager-label">Previous</span> Configuration</a>
+        <a class="pager-next" href="production.html" rel="next"><span class="pager-label">Next</span> Production checklist</a>
+      </nav>
+    </main>
+    <nav class="docs-nav" aria-label="Documentation">
+      <p class="docs-nav-title" id="nav-manual">User manual</p>
+      <ul aria-labelledby="nav-manual">
+          <li><a href="../manual/index.html">Getting started</a></li>
+          <li><a href="../manual/dashboard.html">Dashboard</a></li>
+          <li><a href="../manual/sales.html">Sales</a></li>
+          <li><a href="../manual/expenses.html">Expenses</a></li>
+          <li><a href="../manual/time-and-trips.html">Time and trips</a></li>
+          <li><a href="../manual/contacts.html">Contacts and catalog</a></li>
+          <li><a href="../manual/payments.html">Payments</a></li>
+          <li><a href="../manual/reports.html">Reports and VAT</a></li>
+          <li><a href="../manual/contracts.html">Contracts</a></li>
+          <li><a href="../manual/bookkeeping.html">Bookkeeping</a></li>
+          <li><a href="../manual/imports-exports.html">Import and export</a></li>
+          <li><a href="../manual/activity-log.html">Activity log</a></li>
+          <li><a href="../manual/settings.html">Settings</a></li>
+          <li><a href="../manual/accounting.html">Accounting rules</a></li>
+      </ul>
+      <p class="docs-nav-title" id="nav-self-hosting">Self-hosting</p>
+      <ul aria-labelledby="nav-self-hosting">
+          <li><a href="index.html">Install and run</a></li>
+          <li><a href="configuration.html">Configuration</a></li>
+          <li><a href="integrations.html" aria-current="page">Integrations</a></li>
+          <li><a href="production.html">Production checklist</a></li>
+          <li><a href="backup-restore.html">Backup and restore</a></li>
+          <li><a href="api.html">API</a></li>
+      </ul>
+    </nav>
+  </div>
+  <footer class="site-footer">
+    <div class="wrap footer-top">
+      <div class="footer-about">
+        <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="32" height="32"><span>Fiscal Fox</span></a>
+        <p>Self-hosted accounting for small businesses. A <a href="https://finance.synctune.it">Synctune Finance</a> project.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="../manual/index.html">User manual</a>
+        <a href="index.html">Self-hosting</a>
+        <a href="https://synctune.it">Synctune</a>
+      </nav>
+    </div>
+    <div class="wrap footer-bottom">
+      <p>Documentation as of 15 November 2026. Not financial, tax or legal advice.</p>
+      <details class="privacy">
+        <summary>No cookies. No tracking.</summary>
+        <p>This website uses no analytics, cookies, scripts, web fonts or third-party widgets. Images and styles are local files. The hosting provider may process standard request data. Linked websites have their own privacy policies.</p>
+      </details>
+    </div>
+  </footer>
+</body>
+</html>
