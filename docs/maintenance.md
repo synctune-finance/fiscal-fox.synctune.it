@@ -21,8 +21,8 @@ Pages serves it for any missing path.
 
 The manual and self-hosting pages are drawn from the Fiscal Fox README and
 documentation at revision `2643c08` (15 November 2026) of its private source
-repository. `docs/provenance.json` maps each page to its source files and
-records the checksum of every copied asset. The footer states the same date.
+repository. `docs/provenance.json` records that revision and the checksum of
+every copied asset. The footer states the same date.
 
 Because the source repository is private:
 
@@ -34,12 +34,10 @@ Because the source repository is private:
   note on **Install and run** accurate: Fiscal Fox is in development and has no
   public release yet.
 
-To refresh the content, compare the pinned revision with a newer one in the
-source repository, for example
-`git diff 2643c08..<new> -- README.md docs/`, apply the user-facing changes to
-the matching pages by hand, update screenshots and their checksums, and update
-the revision in this file, `docs/provenance.json` and `docsAsOf` in
-`scripts/site.mjs`.
+To refresh the content, compare the pinned revision of the README and user
+documentation with a newer one, apply the user-facing changes to the matching
+pages by hand, update screenshots and their checksums, and update the revision
+in this file, `docs/provenance.json` and `docsAsOf` in `scripts/site.mjs`.
 
 Markdown alerts become `<div class="callout callout-note" role="note">`
 (also `tip`, `important`, `warning`, `caution`). Wide tables sit in

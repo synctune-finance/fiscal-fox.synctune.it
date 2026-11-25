@@ -2,183 +2,115 @@
   "source": {
     "project": "Fiscal Fox",
     "repository": "private",
-    "revision": "2643c0881e9306728015da253abc6653f23346e2",
-    "date": "2026-11-15"
-  },
-  "pages": {
-    "index.html": [
-      "README.md",
-      "docs/index.md"
-    ],
-    "manual/accounting.html": [
-      "docs/accounting.md"
-    ],
-    "manual/activity-log.html": [
-      "docs/manual/activity-log.md"
-    ],
-    "manual/bookkeeping.html": [
-      "docs/manual/bookkeeping.md"
-    ],
-    "manual/contacts.html": [
-      "docs/manual/contacts.md"
-    ],
-    "manual/contracts.html": [
-      "docs/manual/contracts.md"
-    ],
-    "manual/dashboard.html": [
-      "docs/manual/dashboard.md"
-    ],
-    "manual/expenses.html": [
-      "docs/manual/expenses.md"
-    ],
-    "manual/imports-exports.html": [
-      "docs/manual/imports-exports.md"
-    ],
-    "manual/index.html": [
-      "docs/manual/index.md"
-    ],
-    "manual/payments.html": [
-      "docs/manual/payments.md"
-    ],
-    "manual/reports.html": [
-      "docs/manual/reports.md"
-    ],
-    "manual/sales.html": [
-      "docs/manual/sales.md"
-    ],
-    "manual/settings.html": [
-      "docs/manual/settings.md"
-    ],
-    "manual/time-and-trips.html": [
-      "docs/manual/time-and-trips.md"
-    ],
-    "self-hosting/api.html": [
-      "docs/api.md"
-    ],
-    "self-hosting/backup-restore.html": [
-      "docs/backup-restore.md"
-    ],
-    "self-hosting/configuration.html": [
-      "docs/configuration.md"
-    ],
-    "self-hosting/index.html": [
-      "README.md",
-      "docs/architecture.md",
-      "docs/development.md"
-    ],
-    "self-hosting/integrations.html": [
-      "docs/integrations.md"
-    ],
-    "self-hosting/production.html": [
-      "docs/production-hardening.md"
-    ]
+    "revision": "2643c08",
+    "date": "2026-11-15",
+    "content": "README and user documentation"
   },
   "assets": [
     {
       "asset": "assets/favicon.svg",
       "sha256": "79f95c64134cf5015568f16136a8c8e6b3b74632bfbc426f3d91a738fdf9728a",
-      "source": "apps/web/public/favicon.svg",
-      "note": "Fiscal Fox logo, unmodified"
+      "source": "Fiscal Fox web app favicon, unmodified"
     },
     {
       "asset": "assets/screenshots/activity-log.png",
       "sha256": "fda7066948ad7fa0681791b4074f9cba19089447d7b2092788a04f2510ca6464",
-      "source": "docs/assets/screenshots/activity-log.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/bookkeeping.png",
       "sha256": "04991998ecfd29d3cbb192d63a3eb9152d227db9760794e98e94e65edf7b7185",
-      "source": "docs/assets/screenshots/bookkeeping.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/catalog.png",
       "sha256": "ce7a917c2e9fe37162c5a5a6aeba3d8e4e20c1bf2b5d86755fda35d4a90332a1",
-      "source": "docs/assets/screenshots/catalog.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/contacts.png",
       "sha256": "dbaae66586821cdfd96d4d6effef265aa191d3330e2f6b90a2789645a451c41d",
-      "source": "docs/assets/screenshots/contacts.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/contracts.png",
       "sha256": "21212cdda18c2417f5c83c355e89f244f8cd8e356926ddd95fe99e14f8f1b4a7",
-      "source": "docs/assets/screenshots/contracts.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/dashboard-dark.png",
       "sha256": "c443a91d90872bbadebaa8a08caf5c9cd85b02a98c5c6a5017260a4fc2ab0b0e",
-      "source": "docs/assets/screenshots/dashboard-dark.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/dashboard.png",
       "sha256": "28287b85d15a9e3197ce8528f131f74838701ca7c38765e349e8d7b1852ca3a2",
-      "source": "docs/assets/screenshots/dashboard.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/expenses.png",
       "sha256": "226505f080d8225f292512c4686d7cdfe41d6cd0e6a1bd71de08c3d6e917e465",
-      "source": "docs/assets/screenshots/expenses.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/financial-statements.png",
       "sha256": "5f730f6d8f92f9ee65e966e8d68456606ab76679c316f390f0cb74a6ae6ef08a",
-      "source": "docs/assets/screenshots/financial-statements.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/imports-exports.png",
       "sha256": "9713fa7bebaef2204d79d420261bd0490e7fb346607ca95a1e9ccf52f8c66bfc",
-      "source": "docs/assets/screenshots/imports-exports.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/jump-to-page.png",
       "sha256": "554c4977a564f404533540dadd2d2e75ce6e502d7f83c7320e9bbe9ee6289d32",
-      "source": "docs/assets/screenshots/jump-to-page.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/payments.png",
       "sha256": "0d11451c2acf12f9c8b99bac2790e2a47b821119f19cd9e8b5c609fd1ea558c9",
-      "source": "docs/assets/screenshots/payments.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/reports.png",
       "sha256": "a5d1d01f6aa1b4f81a76085abbb07b3d6793966f36450e54a1b63803c069d7b7",
-      "source": "docs/assets/screenshots/reports.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/sales-draft-editor.png",
       "sha256": "3dbf1a184bef9be3b536ddaea2f042c975f41df0a63a2a6cdb39817e3a0239ad",
-      "source": "docs/assets/screenshots/sales-draft-editor.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/sales.png",
       "sha256": "22b841cd4a3ec12152d3ec6a04fc5dacbe36c10dd3ff3d7016f4e228d504c1bd",
-      "source": "docs/assets/screenshots/sales.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/settings.png",
       "sha256": "993cc50b0b51e8a782542026ce2d64adf454ce0db3e9b443f1fbf53c932caf66",
-      "source": "docs/assets/screenshots/settings.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/sign-in.png",
       "sha256": "19f0cbe9dcaa830f5c9d3853e28fbe5b2531bbd6d2958e6d8d0e2f4fb8ea3722",
-      "source": "docs/assets/screenshots/sign-in.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/time.png",
       "sha256": "88ea082d07bf28e33055c86bd43441fb91786d089691bc27fbd49d2da4b7cf78",
-      "source": "docs/assets/screenshots/time.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/trips.png",
       "sha256": "b91069d62ee5723a479b8d0347e3d7c0c9513b500f46a7715c184e88a51eff04",
-      "source": "docs/assets/screenshots/trips.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/screenshots/vat.png",
       "sha256": "0cc53b9187ce18c56a128de506265cc3d516d19094544285a005cb9665db2065",
-      "source": "docs/assets/screenshots/vat.png"
+      "source": "Fiscal Fox documentation screenshot of the fictional demo organization, unmodified"
     },
     {
       "asset": "assets/apple-touch-icon.png",

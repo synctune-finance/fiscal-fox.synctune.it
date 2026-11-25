@@ -52,21 +52,26 @@ const externalLinks = new Map();
 
 function checkReference(file, value, kind) {
   if (!value || value.startsWith('mailto:') || value.startsWith('data:')) return;
-  if (/^[a-z][a-z0-9+.-]*:/i.test(value) || value.startsWith('//')) {
+  // Absolute links to this site (used by 404.html) are checked like internal ones.
+  const sameOrigin = value === origin || value.startsWith(`${origin}/`) || value.startsWith(`${origin}#`);
+  if (!sameOrigin && (/^[a-z][a-z0-9+.-]*:/i.test(value) || value.startsWith('//'))) {
     if (value.startsWith('http://')) fail(file, `insecure URL ${value}`);
     if (kind !== 'link') fail(file, `external resource ${value}; bundle it locally instead`);
-    else if (!value.startsWith(`${origin}/`) && value !== origin) {
+    else {
       if (!externalLinks.has(value)) externalLinks.set(value, new Set());
       externalLinks.get(value).add(file);
     }
     return;
   }
-  if (value.startsWith('/')) {
+  if (!sameOrigin && value.startsWith('/')) {
     fail(file, `root-relative URL ${value}; use a relative path`);
     return;
   }
-  const [target, hash] = value.split('#');
-  let resolved = target ? path.posix.normalize(path.posix.join(path.posix.dirname(file), target)) : file;
+  const [target, hash] = (sameOrigin ? value.slice(origin.length) : value).split('#');
+  let resolved = sameOrigin
+    ? path.posix.normalize(`.${target || '/'}`).replace(/^\.\/?/, '')
+    : target ? path.posix.normalize(path.posix.join(path.posix.dirname(file), target)) : file;
+  if (sameOrigin && (resolved === '' || resolved.endsWith('/'))) resolved = `${resolved}index.html`;
   if (resolved.startsWith('..')) {
     fail(file, `${value} points outside the site`);
     return;
