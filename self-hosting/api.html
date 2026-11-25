@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API | Fiscal Fox</title>
+  <meta name="description" content="The Fiscal Fox REST API, its OpenAPI document, errors and report endpoints.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101318" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://fiscal-fox.synctune.it/self-hosting/api.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fiscal Fox">
+  <meta property="og:title" content="API | Fiscal Fox">
+  <meta property="og:description" content="The Fiscal Fox REST API, its OpenAPI document, errors and report endpoints.">
+  <meta property="og:url" content="https://fiscal-fox.synctune.it/self-hosting/api.html">
+  <meta property="og:image" content="https://fiscal-fox.synctune.it/assets/social.png">
+  <meta property="og:image:alt" content="The Fiscal Fox logo, a fox with euro signs for eyes, next to the words Fiscal Fox.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="40" height="40"><span>Fiscal Fox</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="../index.html#features">Features</a>
+        <a href="../manual/index.html">User manual</a>
+        <a href="index.html" aria-current="true">Self-hosting</a>
+        <a href="https://finance.synctune.it">Synctune Finance <span class="arrow" aria-hidden="true">&#8599;</span></a>
+      </nav>
+    </div>
+  </header>
+  <div class="wrap docs-layout">
+    <main id="main" class="docs-main" tabindex="-1">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <ol>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="index.html">Self-hosting</a></li>
+          <li><span aria-current="page">API</span></li>
+        </ol>
+      </nav>
+      <article class="prose">
+<!-- content:start -->
+<h1>API</h1>
+<p>The supported application REST surface is versioned under <code>/api/v1</code>. Most
+organization endpoints require the same-origin session cookie and then
+enforce organization permissions and PostgreSQL row-level security. Public quote and
+contract token endpoints declare no session security. Stripe webhooks use the
+<code>stripe-signature</code> header.</p>
+<ul>
+<li>OpenAPI JSON: <code>/api/v1/openapi.json</code></li>
+<li>Same-origin documentation entry: <code>/api/docs</code></li>
+<li>Health: <code>/health</code></li>
+</ul>
+<p>The OpenAPI 3.1 document is generated from the same request and response
+schemas the API validates against, so it describes every supported route.</p>
+<p>Errors use <code>application/problem+json</code>. Clients should retain <code>requestId</code> for log
+correlation, handle idempotency conflicts explicitly, and avoid treating a
+queued <code>202</code> operation as completed. Browser clients should use same-origin
+cookies; production deployments must use TLS and correctly configured trusted
+origins.</p>
+<p>Report reads and report exports share one set of filters. Supply either <code>from</code>
+and <code>to</code> or a calendar <code>year</code> and <code>quarter</code>; the pair is exclusive and the
+server resolves a quarter into the same canonical range, so both forms produce
+identical export fingerprints. The <code>vat-return</code> report requires <code>year</code> and
+<code>quarter</code> and rejects the ledger-only <code>accountId</code>, <code>journalEntryId</code>, and
+<code>fiscalPeriodId</code> filters.</p>
+<p>Exported files are named after the organization, report, and period, for
+example <code>acme-bv-vat-return-q3-2026.pdf</code> or
+<code>acme-bv-trial-balance-2026-01-01-to-2026-11-15.csv</code>. Artifact download links
+are valid for five minutes and send <code>Content-Disposition: attachment</code> with the
+artifact&#39;s file name, so browsers save files under that name rather than the
+storage key.</p>
+<p>Report kinds are <code>general-ledger</code>, <code>trial-balance</code>, <code>profit-loss</code>,
+<code>balance-sheet</code>, <code>vat</code>, <code>vat-return</code>, <code>receivables-aging</code>, <code>cash-basis</code>,
+<code>cash-flow</code>, <code>icp</code>, <code>oss</code>, <code>customer-insights</code>, <code>supplier-insights</code>,
+<code>products-services</code>, <code>cost-categories</code>, and <code>trips-timeline</code>. Every kind returns
+<code>rows</code>, string <code>totals</code>, and <code>limitations</code> (plain-language warnings such as an
+ICP customer without a VAT number or overlapping trips).</p>
+<p><code>GET /dashboard</code> accepts an optional <code>asOf</code> date (the organization&#39;s local
+date). Besides balances and to-do counts, it returns <code>payables</code>, <code>company</code>
+(legal name, KvK number, VAT number, IBAN, and address), <code>monthlyResults</code> (12
+months of revenue and expenses ending with the month of <code>asOf</code>), and
+<code>last30Days</code> (invoiced, costs, hours, and kilometres).</p>
+<p>The <code>vat</code> report returns the Dutch VAT return: one row per box from <code>1a</code> to
+<code>5c</code> with <code>turnover</code> and <code>vat</code> (exact, base currency, <code>null</code> when the box has no
+such column), <code>filedTurnover</code> and <code>filedVat</code> (whole euros as filed), and the
+supporting <code>journalEntryIds</code> and <code>taxCodeIds</code>. Its totals are <code>vatDue</code> (5a),
+<code>inputVat</code> (5b), <code>netVatDue</code> (5c), and their <code>filed*</code> equivalents. The box
+layout is fixed, so <code>limit</code> does not truncate it. See
+<a href="../manual/accounting.html#vat">Accounting</a> for the calculation rules.</p>
+<!-- content:end -->
+      </article>
+      <nav class="pager" aria-label="Previous and next pages">
+        <a class="pager-prev" href="backup-restore.html" rel="prev"><span class="pager-label">Previous</span> Backup and restore</a>
+      </nav>
+    </main>
+    <nav class="docs-nav" aria-label="Documentation">
+      <p class="docs-nav-title" id="nav-manual">User manual</p>
+      <ul aria-labelledby="nav-manual">
+          <li><a href="../manual/index.html">Getting started</a></li>
+          <li><a href="../manual/dashboard.html">Dashboard</a></li>
+          <li><a href="../manual/sales.html">Sales</a></li>
+          <li><a href="../manual/expenses.html">Expenses</a></li>
+          <li><a href="../manual/time-and-trips.html">Time and trips</a></li>
+          <li><a href="../manual/contacts.html">Contacts and catalog</a></li>
+          <li><a href="../manual/payments.html">Payments</a></li>
+          <li><a href="../manual/reports.html">Reports and VAT</a></li>
+          <li><a href="../manual/contracts.html">Contracts</a></li>
+          <li><a href="../manual/bookkeeping.html">Bookkeeping</a></li>
+          <li><a href="../manual/imports-exports.html">Import and export</a></li>
+          <li><a href="../manual/activity-log.html">Activity log</a></li>
+          <li><a href="../manual/settings.html">Settings</a></li>
+          <li><a href="../manual/accounting.html">Accounting rules</a></li>
+      </ul>
+      <p class="docs-nav-title" id="nav-self-hosting">Self-hosting</p>
+      <ul aria-labelledby="nav-self-hosting">
+          <li><a href="index.html">Install and run</a></li>
+          <li><a href="configuration.html">Configuration</a></li>
+          <li><a href="integrations.html">Integrations</a></li>
+          <li><a href="production.html">Production checklist</a></li>
+          <li><a href="backup-restore.html">Backup and restore</a></li>
+          <li><a href="api.html" aria-current="page">API</a></li>
+      </ul>
+    </nav>
+  </div>
+  <footer class="site-footer">
+    <div class="wrap footer-top">
+      <div class="footer-about">
+        <a class="brand" href="../index.html"><img src="../assets/favicon.svg" alt="" width="32" height="32"><span>Fiscal Fox</span></a>
+        <p>Self-hosted accounting for small businesses. A <a href="https://finance.synctune.it">Synctune Finance</a> project.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="../manual/index.html">User manual</a>
+        <a href="index.html">Self-hosting</a>
+        <a href="https://synctune.it">Synctune</a>
+      </nav>
+    </div>
+    <div class="wrap footer-bottom">
+      <p>Documentation as of 15 November 2026. Not financial, tax or legal advice.</p>
+      <details class="privacy">
+        <summary>No cookies. No tracking.</summary>
+        <p>This website uses no analytics, cookies, scripts, web fonts or third-party widgets. Images and styles are local files. The hosting provider may process standard request data. Linked websites have their own privacy policies.</p>
+      </details>
+    </div>
+  </footer>
+</body>
+</html>
