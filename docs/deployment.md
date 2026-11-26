@@ -6,16 +6,21 @@ The repository contains the finished website. There is no package manager,
 framework, generator or runtime service, and no `package.json`. All images
 and CSS are local files. Do not run `npm install`.
 
-Open `index.html` in a browser to read the site. Relative links also work from
-disk. For an HTTP preview, use any static web server. If Python 3 is already
-available:
+Pages link to each other by clean URL, without `.html` (see
+[maintenance](maintenance.md#urls)). Those links need a server that maps them
+to files the way GitHub Pages does, so opening `index.html` from disk shows a
+page but not the links between pages. Preview with the bundled server, which
+uses only Node.js built-in modules:
 
 ```sh
-python3 -m http.server 8080 --bind 127.0.0.1
+node scripts/serve.mjs
 ```
 
-Visit `http://127.0.0.1:8080`. Stop the server with Ctrl+C.
-Python is an optional preview tool, not a website dependency.
+Visit `http://127.0.0.1:8080`; add `--port 3000` to use another port. Stop the
+server with Ctrl+C. Like GitHub Pages, it serves `/manual/sales` from
+`manual/sales.html` and `/manual/` from `manual/index.html`, redirects
+`/manual` to `/manual/`, still serves `.html` addresses, and answers anything
+else with `404.html` and status 404. It serves only the published files.
 
 ## Checks
 
@@ -78,6 +83,9 @@ final custom domain.
 ## Other static hosts
 
 Publish the files listed above as static files. Leave the install and build
-commands empty. The site needs no environment variables, rewrites, server
-functions or network API. `404.html` is a standalone fallback; select it as the
-not-found page if the host requires it.
+commands empty. The site needs no environment variables, server functions or
+network API, but the host must serve clean URLs as GitHub Pages does:
+`/manual/sales` from `manual/sales.html` and `/manual/` from
+`manual/index.html`. Enable the host's clean URL option if that is not its
+default. `404.html` is a standalone fallback; select it as the not-found page
+if the host requires it.
