@@ -2,23 +2,23 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://fiscal-fox.synctune.it/</loc></url>
   <url><loc>https://fiscal-fox.synctune.it/manual/</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/dashboard.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/sales.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/expenses.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/time-and-trips.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/contacts.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/payments.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/reports.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/contracts.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/bookkeeping.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/imports-exports.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/activity-log.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/settings.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/manual/accounting.html</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/dashboard</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/sales</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/expenses</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/time-and-trips</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/contacts</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/payments</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/reports</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/contracts</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/bookkeeping</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/imports-exports</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/activity-log</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/settings</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/manual/accounting</loc></url>
   <url><loc>https://fiscal-fox.synctune.it/self-hosting/</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/self-hosting/configuration.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/self-hosting/integrations.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/self-hosting/production.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/self-hosting/backup-restore.html</loc></url>
-  <url><loc>https://fiscal-fox.synctune.it/self-hosting/api.html</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/self-hosting/configuration</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/self-hosting/integrations</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/self-hosting/production</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/self-hosting/backup-restore</loc></url>
+  <url><loc>https://fiscal-fox.synctune.it/self-hosting/api</loc></url>
 </urlset>
