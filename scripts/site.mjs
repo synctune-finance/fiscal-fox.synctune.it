@@ -47,6 +47,12 @@ export const sections = [
 export const docPages = sections.flatMap((section) => section.pages.map((page) => ({ ...page, section })));
 export const allPages = [home, ...docPages];
 
+// Pages are linked without ".html", as GitHub Pages serves /foo from foo.html.
+// A directory index is linked as the directory with a trailing slash.
+export function cleanPath(pagePath) {
+  return pagePath.replace(/(^|\/)index\.html$/, '$1').replace(/\.html$/, '');
+}
+
 export function canonicalUrl(pagePath) {
-  return `${origin}/${pagePath.replace(/(^|\/)index\.html$/, '$1')}`;
+  return `${origin}/${cleanPath(pagePath)}`;
 }

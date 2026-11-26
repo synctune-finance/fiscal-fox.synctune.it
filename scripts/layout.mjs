@@ -5,7 +5,7 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { allPages, canonicalUrl, docsAsOf, home, origin, sections } from './site.mjs';
+import { allPages, canonicalUrl, cleanPath, docsAsOf, home, origin, sections } from './site.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const check = process.argv.includes('--check');
@@ -15,11 +15,21 @@ const END = '<!-- content:end -->';
 const escapeHtml = (value) =>
   value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-// Relative URL from one site file to another, so pages also work from disk
-// and under a repository path.
+// Relative URL from one site file to another, so pages also work under a
+// repository path. Pages get clean URLs: "sales.html" becomes "sales" and
+// "index.html" becomes its directory with a trailing slash.
 function to(fromPath, target) {
   const [file, hash] = target.split('#');
-  const rel = path.posix.relative(path.posix.dirname(fromPath), file) || path.posix.basename(file);
+  const fromDir = path.posix.dirname(fromPath);
+  let rel;
+  if (file.endsWith('.html')) {
+    const clean = cleanPath(file);
+    rel = clean === '' || clean.endsWith('/')
+      ? `${path.posix.relative(fromDir, clean || '.') || '.'}/`
+      : path.posix.relative(fromDir, clean);
+  } else {
+    rel = path.posix.relative(fromDir, file) || path.posix.basename(file);
+  }
   return hash ? `${rel}#${hash}` : rel;
 }
 

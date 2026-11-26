@@ -67,23 +67,51 @@ function checkReference(file, value, kind) {
     fail(file, `root-relative URL ${value}; use a relative path`);
     return;
   }
-  const [target, hash] = (sameOrigin ? value.slice(origin.length) : value).split('#');
+  const [rawTarget, hash] = (sameOrigin ? value.slice(origin.length) : value).split('#');
+  const suggest = (newTarget) => `${sameOrigin ? origin : ''}${newTarget}${hash === undefined ? '' : `#${hash}`}`;
+  // Pages are linked by clean URL: "sales" for sales.html, "manual/" for manual/index.html.
+  if (kind === 'link' && /\.html$/i.test(rawTarget)) {
+    fail(file, `${value} links to a .html file; use ${suggest(cleanLink(rawTarget))} instead`);
+    return;
+  }
+  // "." and ".." name a directory, like a trailing slash.
+  const target = /(^|\/)\.\.?$/.test(rawTarget) ? `${rawTarget}/` : rawTarget;
+  const linksFile = sameOrigin || Boolean(target);
   let resolved = sameOrigin
-    ? path.posix.normalize(`.${target || '/'}`).replace(/^\.\/?/, '')
-    : target ? path.posix.normalize(path.posix.join(path.posix.dirname(file), target)) : file;
-  if (sameOrigin && (resolved === '' || resolved.endsWith('/'))) resolved = `${resolved}index.html`;
+    ? path.posix.normalize(`/${target}`).slice(1)
+    : target ? path.posix.normalize(path.posix.join(path.posix.dirname(file), target)).replace(/^\.\//, '') : file;
   if (resolved.startsWith('..')) {
     fail(file, `${value} points outside the site`);
     return;
   }
-  const absolute = path.join(root, resolved);
-  if (existsSync(absolute) && statSync(absolute).isDirectory()) resolved = path.posix.join(resolved, 'index.html');
-  if (!existsSync(path.join(root, resolved))) {
+  if (linksFile && (resolved === '' || resolved.endsWith('/'))) {
+    resolved = `${resolved}index.html`;
+  } else if (linksFile && kind === 'link' && !path.posix.extname(resolved)) {
+    if (isFile(`${resolved}.html`)) resolved = `${resolved}.html`;
+    else if (isFile(`${resolved}/index.html`)) {
+      fail(file, `${value} is a directory; add a trailing slash (${suggest(`${rawTarget}/`)}), as GitHub Pages redirects it`);
+      return;
+    } else {
+      fail(file, `broken ${kind} ${value}`);
+      return;
+    }
+  }
+  if (!isFile(resolved)) {
     fail(file, `broken ${kind} ${value}`);
     return;
   }
   if (!publishedFile(resolved)) fail(file, `${value} is not part of the published site`);
   if (hash && resolved.endsWith('.html') && !idsOf(resolved).has(hash)) fail(file, `missing anchor ${value}`);
+}
+
+function isFile(file) {
+  const absolute = path.join(root, file);
+  return existsSync(absolute) && statSync(absolute).isFile();
+}
+
+function cleanLink(target) {
+  const clean = target.replace(/(^|\/)index\.html$/i, '$1').replace(/\.html$/i, '');
+  return clean === '' ? './' : clean;
 }
 
 function publishedFile(file) {
@@ -163,6 +191,8 @@ function checkPage(file) {
   if (page) {
     const canonical = byName('link').find((tag) => tag.attrs.rel === 'canonical');
     if (canonical?.attrs.href !== canonicalUrl(file)) fail(file, `canonical URL must be ${canonicalUrl(file)}`);
+    const ogUrl = byName('meta').find((tag) => tag.attrs.property === 'og:url');
+    if (ogUrl?.attrs.content !== canonicalUrl(file)) fail(file, `og:url must be ${canonicalUrl(file)}`);
   } else if (!byName('meta').some((tag) => tag.attrs.name === 'robots' && tag.attrs.content.includes('noindex'))) {
     fail(file, 'pages outside the sitemap need <meta name="robots" content="noindex">');
   }

@@ -7,7 +7,8 @@ navigation, breadcrumb, previous and next links, and footer) is written by
 `scripts/layout.mjs` around each page's hand-written content, which sits
 between `<!-- content:start -->` and `<!-- content:end -->`.
 
-- Edit text, tables and screenshots inside those markers directly.
+- Edit text, tables and screenshots inside those markers directly. Link to
+  other pages by clean URL, as described under [URLs](#urls).
 - Page titles, descriptions, navigation labels and order live in
   `scripts/site.mjs`. To add a page, add its entry there, create the file with
   the two markers and an `<h1>`, and run `node scripts/layout.mjs`.
@@ -16,6 +17,27 @@ between `<!-- content:start -->` and `<!-- content:end -->`.
 
 `404.html` is standalone with inline styles and absolute links, because GitHub
 Pages serves it for any missing path.
+
+## URLs
+
+Every page is an `.html` file, but links and published addresses leave out
+`.html`. GitHub Pages serves `/manual/sales` from `manual/sales.html`, and
+still answers the old `.html` addresses, so existing links keep working.
+
+- Link to a page without `.html`: `sales` from another manual page,
+  `../manual/sales` from `self-hosting/`, `manual/sales` from the home page.
+  Anchors follow the clean URL: `sales#row-actions`.
+- Link to a directory index as the directory with a trailing slash:
+  `manual/index.html` is `./` from inside `manual/`, `../manual/` from
+  `self-hosting/` and `manual/` from the home page; the home page is `./` or
+  `../`. Without the slash GitHub Pages redirects, and `/manual/sales/` is a
+  404 because only `manual/sales.html` exists.
+- Keep links relative, so the site also works under a repository path.
+- Canonical and `og:url` addresses, `sitemap.xml` and the absolute links in
+  `404.html` use the same form, such as `https://fiscal-fox.synctune.it/manual/`
+  and `https://fiscal-fox.synctune.it/manual/sales`. `scripts/layout.mjs`
+  writes the shared links and these addresses with `cleanPath()` from
+  `scripts/site.mjs`; page entries there keep their `.html` file paths.
 
 ## Content source
 
@@ -76,7 +98,11 @@ changes.
 
 `node scripts/check-site.mjs` fails on:
 
-- broken internal links, missing anchors and missing assets;
+- broken internal links, missing anchors and missing assets: a link without an
+  extension must match `<path>.html`, one with a trailing slash
+  `<path>/index.html`, and anchors are checked in that file;
+- internal links that end in `.html`, and links to a directory index without
+  the trailing slash (`../manual` instead of `../manual/`);
 - external resources (stylesheets, images, scripts, fonts), root-relative URLs,
   `http://` URLs, any `<script>`, and links that open new windows;
 - accessibility basics: `lang`, title, zoomable viewport, one `<main>` with a
@@ -84,16 +110,17 @@ changes.
   `alt`, `width` and `height`, link names, `th` scope, labelled scrollable
   regions, duplicate ids and broken ARIA references;
 - WCAG AA colour contrast for the text and focus colour pairs in both palettes;
-- `CNAME`, `.nojekyll`, `robots.txt`, `sitemap.xml` and canonical URLs that
-  disagree with `scripts/site.mjs`, and unused images.
+- `CNAME`, `.nojekyll`, `robots.txt`, `sitemap.xml`, and canonical and
+  `og:url` addresses that disagree with `scripts/site.mjs`, and unused images.
 
 `--external` also requests every external link, with retries.
 `node scripts/layout.mjs --check` fails when a page or the sitemap is out of
 date. CI runs all three before packaging.
 
-Before publishing a change, also preview narrow and wide screens in light and
-dark mode, tab through the page, and open the privacy disclosure with the
-keyboard.
+Before publishing a change, also preview it with `node scripts/serve.mjs` (see
+[deployment](deployment.md#no-installation-or-build)) on narrow and wide
+screens in light and dark mode, tab through the page, and open the privacy
+disclosure with the keyboard.
 
 ## Links
 
